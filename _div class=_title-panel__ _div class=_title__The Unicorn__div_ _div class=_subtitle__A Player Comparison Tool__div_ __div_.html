@@ -1,0 +1,1990 @@
+<!DOCTYPE html>
+<!-- saved from url=(0043)https://atulvenkatesh.shinyapps.io/Unicorn/ -->
+<html class=""><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!--<base href="_w_9f203ec1/">--><base href=".">
+    <script type="text/javascript">
+(function() {
+  var workerId = '_w_9f203ec1';
+  // remove base href if worker ID is in url
+  if (window.location.href.indexOf(workerId) > 0) {
+    document.querySelector('base').removeAttribute('href');
+  }
+})();
+</script>
+
+      <script type="text/javascript">
+      var __connect = {
+        shinyPre101: false
+      }
+      </script>
+      
+  
+  <script type="application/shiny-singletons"></script>
+  <script type="application/html-dependencies">jquery[3.6.0];shiny-css[1.8.1.1];shiny-javascript[1.8.1.1];selectize[0.15.2];bootstrap[3.4.1]</script>
+<script src="./_div class=_title-panel__ _div class=_title__The Unicorn__div_ _div class=_subtitle__A Player Comparison Tool__div_ __div__files/jquery.min.js"></script>
+<link href="./_div class=_title-panel__ _div class=_title__The Unicorn__div_ _div class=_subtitle__A Player Comparison Tool__div_ __div__files/shiny.min.css" rel="stylesheet">
+<script src="./_div class=_title-panel__ _div class=_title__The Unicorn__div_ _div class=_subtitle__A Player Comparison Tool__div_ __div__files/shiny.min.js"></script>
+<link href="./_div class=_title-panel__ _div class=_title__The Unicorn__div_ _div class=_subtitle__A Player Comparison Tool__div_ __div__files/selectize.bootstrap3.css" rel="stylesheet">
+<script src="./_div class=_title-panel__ _div class=_title__The Unicorn__div_ _div class=_subtitle__A Player Comparison Tool__div_ __div__files/selectize.min.js"></script>
+<script src="./_div class=_title-panel__ _div class=_title__The Unicorn__div_ _div class=_subtitle__A Player Comparison Tool__div_ __div__files/selectize-plugin-a11y.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="./_div class=_title-panel__ _div class=_title__The Unicorn__div_ _div class=_subtitle__A Player Comparison Tool__div_ __div__files/bootstrap.min.css" rel="stylesheet">
+<link href="./_div class=_title-panel__ _div class=_title__The Unicorn__div_ _div class=_subtitle__A Player Comparison Tool__div_ __div__files/bootstrap-accessibility.min.css" rel="stylesheet">
+<script src="./_div class=_title-panel__ _div class=_title__The Unicorn__div_ _div class=_subtitle__A Player Comparison Tool__div_ __div__files/bootstrap.min.js"></script>
+<script src="./_div class=_title-panel__ _div class=_title__The Unicorn__div_ _div class=_subtitle__A Player Comparison Tool__div_ __div__files/bootstrap-accessibility.min.js"></script>  <style>
+    body { font-family: serif; }
+    .title-panel { text-align: center; }
+    .title { font-size: 48px; font-weight: bold; }
+    .subtitle { font-size: 24px; }
+    .player-info {
+      text-align: center;
+      margin-top: 10px;
+    }
+    .player-info p {
+      margin: 5px 0;
+    }
+    .bold {
+      font-weight: bold;
+    }
+    .italic {
+      font-style: italic;
+    }
+    .explanation {
+      border: 2px dashed red;
+      padding: 5px;
+      text-align: center;
+      margin: 5px auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      max-width: 800px;
+      width: 100%;
+    }
+    .explanation div {
+      margin: 5px 0;
+    }
+    .credit {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .centered-table {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .watermark {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      opacity: 0.5;
+      z-index: 1000;
+    }
+    .watermark a {
+      margin: 0 3px;
+      color: #000;
+    }
+    .watermark img {
+      width: 25px;
+      height: 25px;
+    }
+  </style>
+  <title>
+    &lt;div class="title-panel"&gt;
+      &lt;div class="title"&gt;The Unicorn&lt;/div&gt;
+      &lt;div class="subtitle"&gt;A Player Comparison Tool&lt;/div&gt;
+    &lt;/div&gt;
+  </title>
+<script src="./_div class=_title-panel__ _div class=_title__The Unicorn__div_ _div class=_subtitle__A Player Comparison Tool__div_ __div__files/sockjs.min.js"></script>
+<script src="./_div class=_title-panel__ _div class=_title__The Unicorn__div_ _div class=_subtitle__A Player Comparison Tool__div_ __div__files/shiny-server-client.min.js"></script>
+<script>preShinyInit({reconnect:true,reconnectTimeout:15000,disableProtocols:["htmlfile","xdr-streaming","xdr-polling","websocket"],token:true,workerId:true,subappTag:true,extendSession:true,fixupInternalLinks:true});</script>
+<link rel="stylesheet" type="text/css" href="./_div class=_title-panel__ _div class=_title__The Unicorn__div_ _div class=_subtitle__A Player Comparison Tool__div_ __div__files/rstudio-connect.css">
+<link rel="stylesheet" type="text/css" href="./_div class=_title-panel__ _div class=_title__The Unicorn__div_ _div class=_subtitle__A Player Comparison Tool__div_ __div__files/shinyapps.css"></head>
+<body data-new-gr-c-s-check-loaded="14.1188.0" data-gr-ext-installed="" class="">
+<script type="text/javascript" src="./_div class=_title-panel__ _div class=_title__The Unicorn__div_ _div class=_subtitle__A Player Comparison Tool__div_ __div__files/iframeResizer.contentWindow.min.js"></script>
+<script type="text/javascript" src="./_div class=_title-panel__ _div class=_title__The Unicorn__div_ _div class=_subtitle__A Player Comparison Tool__div_ __div__files/shinyapps.frame.content.js"></script>
+<script type="text/javascript" src="./_div class=_title-panel__ _div class=_title__The Unicorn__div_ _div class=_subtitle__A Player Comparison Tool__div_ __div__files/shinyapps.js"></script>
+  <div class="container-fluid">
+    <h2>
+      <div class="title-panel">
+        <div class="title">The Unicorn</div>
+        <div class="subtitle">A Player Comparison Tool</div>
+      </div>
+    </h2>
+    <div class="row">
+      <div class="col-sm-12" align="center">
+        <div>
+          Comparing the college production of NFL
+          <span class="bold">QBs, RBs, and WRs</span>
+          from the
+          <span class="bold">2005-2024</span>
+          NFL Draft through a K-Nearest Neighbors algorithm.
+        </div>
+        <div>Based on measurables, observed/imputed combine results, and college statistics</div>
+        <div class="explanation">
+          <div>
+            <span class="bold">How to use:</span>
+          </div>
+          <div>1. Use the dropdown menu to select a player from the list. You can also type the player's name to search.</div>
+          <div>2. After selecting a player, a table will display five players with the most similar profiles and their similarity score (euclidean distance).</div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-4">
+        <form class="well" role="complementary">
+          <br>
+          <br>
+          <div class="form-group shiny-input-container">
+            <label class="control-label" id="draft_class-label" for="draft_class-selectized">Select Draft Class:</label>
+            <div>
+              <select id="draft_class" class="shiny-input-select shiny-bound-input selectized" style="display: none;" aria-live="polite" tabindex="-1">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<option value="All Draft Classes" selected="selected">All Draft Classes</option></select><div class="shiny-input-select shiny-bound-input selectize-control single plugin-selectize-plugin-a11y"><div class="selectize-input items has-options full has-items"><div class="item" data-value="All Draft Classes">All Draft Classes</div><input type="text" autocomplete="new-password" autofill="no" tabindex="" id="draft_class-selectized" role="combobox" aria-expanded="false" haspopup="listbox" aria-owns="yr34gho2rk" style="width: 4px; opacity: 0; position: absolute; left: 0px;"></div><div class="single selectize-dropdown shiny-input-select shiny-bound-input plugin-selectize-plugin-a11y" style="display: none; visibility: visible; width: 100%; min-width: 420px; top: 34px; left: 0px;"><div class="selectize-dropdown-content" tabindex="-1" role="listbox" id="yr34gho2rk"><div class="option selected" data-selectable="" data-value="All Draft Classes" role="option" id="06kaoh4he6">All Draft Classes</div><div class="option" data-selectable="" data-value="2024" role="option" id="wy46ob0ru3">2024</div><div class="option" data-selectable="" data-value="2023" role="option" id="lix8svlgey">2023</div><div class="option" data-selectable="" data-value="2022" role="option" id="tklwsb9oiw">2022</div><div class="option" data-selectable="" data-value="2021" role="option" id="yz2d8fyzv7">2021</div><div class="option" data-selectable="" data-value="2020" role="option" id="cdzmaz1ert">2020</div><div class="option" data-selectable="" data-value="2019" role="option" id="dt9e9qbczd">2019</div><div class="option" data-selectable="" data-value="2018" role="option" id="7q1hy33a5m">2018</div><div class="option" data-selectable="" data-value="2017" role="option" id="kzw2zfmdjw">2017</div><div class="option" data-selectable="" data-value="2016" role="option" id="6r1rk55liw">2016</div><div class="option" data-selectable="" data-value="2015" role="option" id="6z2qp2hrfs">2015</div><div class="option" data-selectable="" data-value="2014" role="option" id="uq1yk6d2rl">2014</div><div class="option" data-selectable="" data-value="2013" role="option" id="mbzzizko6p">2013</div><div class="option" data-selectable="" data-value="2012" role="option" id="wvp4alfed7">2012</div><div class="option" data-selectable="" data-value="2011" role="option" id="ena46ft0af">2011</div><div class="option" data-selectable="" data-value="2010" role="option" id="m6cvb22u2w">2010</div><div class="option" data-selectable="" data-value="2009" role="option" id="nt385eymqa">2009</div><div class="option" data-selectable="" data-value="2008" role="option" id="abq11dnfe0">2008</div><div class="option" data-selectable="" data-value="2007" role="option" id="n0yw2tji4u">2007</div><div class="option" data-selectable="" data-value="2006" role="option" id="jhvbnayb98">2006</div><div class="option" data-selectable="" data-value="2005" role="option" id="rk6h6hs6l2">2005</div></div></div></div>
+              <script type="application/json" data-for="draft_class" data-nonempty="">{"plugins":["selectize-plugin-a11y"]}</script>
+            </div>
+          </div>
+          <div class="form-group shiny-input-container">
+            <label class="control-label" id="position-label" for="position-selectized">Select Position:</label>
+            <div>
+              <select id="position" class="shiny-input-select shiny-bound-input selectized" style="display: none;" aria-live="polite" tabindex="-1">
+
+
+<option value="All Positions" selected="selected">All Positions</option></select><div class="shiny-input-select shiny-bound-input selectize-control single plugin-selectize-plugin-a11y"><div class="selectize-input items has-options full has-items"><div class="item" data-value="All Positions">All Positions</div><input type="text" autocomplete="new-password" autofill="no" tabindex="" id="position-selectized" role="combobox" aria-expanded="false" haspopup="listbox" aria-owns="udc0m3i6r7" style="width: 4px; opacity: 0; position: absolute; left: 0px;"></div><div class="single selectize-dropdown shiny-input-select shiny-bound-input plugin-selectize-plugin-a11y" style="display: none; visibility: visible; width: 100%; min-width: 420px; top: 34px; left: 0px;"><div class="selectize-dropdown-content" tabindex="-1" role="listbox" id="udc0m3i6r7"><div class="option selected" data-selectable="" data-value="All Positions" role="option" id="nb34vd7190">All Positions</div><div class="option" data-selectable="" data-value="QB" role="option" id="oaklairioe">QB</div><div class="option" data-selectable="" data-value="RB" role="option" id="28rem0l877">RB</div><div class="option" data-selectable="" data-value="WR" role="option" id="ir168if7xl">WR</div></div></div></div>
+              <script type="application/json" data-for="position" data-nonempty="">{"plugins":["selectize-plugin-a11y"]}</script>
+            </div>
+          </div>
+          <div class="form-group shiny-input-container">
+            <label class="control-label" id="selected_player-label" for="selected_player-selectized">Select a player:</label>
+            <div>
+              <select class="shiny-input-select form-control shiny-bound-input selectized" id="selected_player" style="display: none;" aria-live="polite" tabindex="-1">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<option value="Darren Waller" selected="selected">Darren Waller</option></select><div class="shiny-input-select form-control shiny-bound-input selectize-control single"><div class="selectize-input items has-options full has-items"><div class="item" data-value="Darren Waller">Darren Waller</div><input type="text" autocomplete="new-password" autofill="no" tabindex="" id="selected_player-selectized" style="width: 4px; opacity: 0; position: absolute; left: 0px;"></div><div class="single selectize-dropdown shiny-input-select form-control shiny-bound-input" style="display: none; width: 100%; min-width: 420px; top: 34px; left: 0px; visibility: visible;"><div class="selectize-dropdown-content" tabindex="-1"><div class="option" data-selectable="" data-value="Andrew Walter">Andrew Walter</div><div class="option" data-selectable="" data-value="Brock Berlin">Brock Berlin</div><div class="option" data-selectable="" data-value="Rasheed Marshall">Rasheed Marshall</div><div class="option" data-selectable="" data-value="Charlie Frye">Charlie Frye</div><div class="option" data-selectable="" data-value="Jason Campbell">Jason Campbell</div><div class="option" data-selectable="" data-value="David Greene">David Greene</div><div class="option" data-selectable="" data-value="Timmy Chang">Timmy Chang</div><div class="option" data-selectable="" data-value="Stefan LeFors">Stefan LeFors</div><div class="option" data-selectable="" data-value="Marques Hagans">Marques Hagans</div><div class="option" data-selectable="" data-value="Bruce Gradkowski">Bruce Gradkowski</div><div class="option" data-selectable="" data-value="Kent Smith">Kent Smith</div><div class="option" data-selectable="" data-value="Jay Cutler">Jay Cutler</div><div class="option" data-selectable="" data-value="Dan Orlovsky">Dan Orlovsky</div><div class="option" data-selectable="" data-value="Bryan Randall">Bryan Randall</div><div class="option" data-selectable="" data-value="Charlie Whitehurst">Charlie Whitehurst</div><div class="option" data-selectable="" data-value="Brett Basanez">Brett Basanez</div><div class="option" data-selectable="" data-value="Kyle Orton">Kyle Orton</div><div class="option" data-selectable="" data-value="Gino Guidugli">Gino Guidugli</div><div class="option" data-selectable="" data-value="Brad Smith">Brad Smith</div><div class="option" data-selectable="" data-value="Michael Robinson">Michael Robinson</div><div class="option" data-selectable="" data-value="Matt Leinart">Matt Leinart</div><div class="option" data-selectable="" data-value="Kellen Clemens">Kellen Clemens</div><div class="option" data-selectable="" data-value="Paul Pinegar">Paul Pinegar</div><div class="option" data-selectable="" data-value="Derek Anderson">Derek Anderson</div><div class="option" data-selectable="" data-value="D.J. Shockley">D.J. Shockley</div><div class="option" data-selectable="" data-value="Brodie Croyle">Brodie Croyle</div><div class="option" data-selectable="" data-value="Jeff Rowe">Jeff Rowe</div><div class="option" data-selectable="" data-value="Troy Smith">Troy Smith</div><div class="option" data-selectable="" data-value="John Stocco">John Stocco</div><div class="option" data-selectable="" data-value="Drew Stanton">Drew Stanton</div><div class="option" data-selectable="" data-value="Zac Taylor">Zac Taylor</div><div class="option" data-selectable="" data-value="Omar Jacobs">Omar Jacobs</div><div class="option" data-selectable="" data-value="Alex Smith">Alex Smith</div><div class="option" data-selectable="" data-value="Jared Zabransky">Jared Zabransky</div><div class="option" data-selectable="" data-value="Luke Getsy">Luke Getsy</div><div class="option" data-selectable="" data-value="Tyler Palko">Tyler Palko</div><div class="option" data-selectable="" data-value="Vince Young">Vince Young</div><div class="option" data-selectable="" data-value="Marcus Vick">Marcus Vick</div><div class="option" data-selectable="" data-value="James Pinkney">James Pinkney</div><div class="option" data-selectable="" data-value="Isaiah Stanback">Isaiah Stanback</div><div class="option" data-selectable="" data-value="Paul Thompson">Paul Thompson</div><div class="option" data-selectable="" data-value="Jordan Palmer">Jordan Palmer</div><div class="option" data-selectable="" data-value="Drew Olson">Drew Olson</div><div class="option" data-selectable="" data-value="Reggie McNeal">Reggie McNeal</div><div class="option" data-selectable="" data-value="Sam Keller">Sam Keller</div><div class="option" data-selectable="" data-value="Aaron Rodgers">Aaron Rodgers</div><div class="option" data-selectable="" data-value="Dennis Dixon">Dennis Dixon</div><div class="option" data-selectable="" data-value="John David Booty">John David Booty</div><div class="option" data-selectable="" data-value="Alex Brink">Alex Brink</div><div class="option" data-selectable="" data-value="Colt Brennan">Colt Brennan</div><div class="option" data-selectable="" data-value="Reggie Ball">Reggie Ball</div><div class="option" data-selectable="" data-value="Matt Ryan">Matt Ryan</div><div class="option" data-selectable="" data-value="Kyle Wright">Kyle Wright</div><div class="option" data-selectable="" data-value="Chris Leak">Chris Leak</div><div class="option" data-selectable="" data-value="Matt Flynn">Matt Flynn</div><div class="option" data-selectable="" data-value="JaMarcus Russell">JaMarcus Russell</div><div class="option" data-selectable="" data-value="Tom Brandstater">Tom Brandstater</div><div class="option" data-selectable="" data-value="Kevin Kolb">Kevin Kolb</div><div class="option" data-selectable="" data-value="Kevin O&#39;Connell">Kevin O'Connell</div><div class="option" data-selectable="" data-value="Paul Smith">Paul Smith</div><div class="option" data-selectable="" data-value="John Beck">John Beck</div><div class="option" data-selectable="" data-value="Adam Tafralis">Adam Tafralis</div><div class="option" data-selectable="" data-value="Bernard Morris">Bernard Morris</div><div class="option" data-selectable="" data-value="Brady Quinn">Brady Quinn</div><div class="option" data-selectable="" data-value="Pat White">Pat White</div><div class="option" data-selectable="" data-value="Rudy Carpenter">Rudy Carpenter</div><div class="option" data-selectable="" data-value="Max Hall">Max Hall</div><div class="option" data-selectable="" data-value="Cullen Harper">Cullen Harper</div><div class="option" data-selectable="" data-value="Graham Harrell">Graham Harrell</div><div class="option" data-selectable="" data-value="Brian Hoyer">Brian Hoyer</div><div class="option" data-selectable="" data-value="Chad Henne">Chad Henne</div><div class="option" data-selectable="" data-value="Curtis Painter">Curtis Painter</div><div class="option" data-selectable="" data-value="Erik Ainge">Erik Ainge</div><div class="option" data-selectable="" data-value="Chase Holbrook">Chase Holbrook</div><div class="option" data-selectable="" data-value="Anthony Morelli">Anthony Morelli</div><div class="option" data-selectable="" data-value="Brian Brohm">Brian Brohm</div><div class="option" data-selectable="" data-value="Sean Canfield">Sean Canfield</div><div class="option" data-selectable="" data-value="Riley Skinner">Riley Skinner</div><div class="option" data-selectable="" data-value="Hunter Cantwell">Hunter Cantwell</div><div class="option" data-selectable="" data-value="Mike Kafka">Mike Kafka</div><div class="option" data-selectable="" data-value="Tony Pike">Tony Pike</div><div class="option" data-selectable="" data-value="John Parker Wilson">John Parker Wilson</div><div class="option" data-selectable="" data-value="Ryan Colburn">Ryan Colburn</div><div class="option" data-selectable="" data-value="Dan LeFevour">Dan LeFevour</div><div class="option" data-selectable="" data-value="Drew Willy">Drew Willy</div><div class="option" data-selectable="" data-value="Tim Hiller">Tim Hiller</div><div class="option" data-selectable="" data-value="Levi Brown">Levi Brown</div><div class="option" data-selectable="" data-value="Zac Robinson">Zac Robinson</div><div class="option" data-selectable="" data-value="Mark Sanchez">Mark Sanchez</div><div class="option" data-selectable="" data-value="Jarrett Brown">Jarrett Brown</div><div class="option" data-selectable="" data-value="Colt McCoy">Colt McCoy</div><div class="option" data-selectable="" data-value="Chase Daniel">Chase Daniel</div><div class="option" data-selectable="" data-value="Andy Dalton">Andy Dalton</div><div class="option" data-selectable="" data-value="Jevan Snead">Jevan Snead</div><div class="option" data-selectable="" data-value="Tim Tebow">Tim Tebow</div><div class="option" data-selectable="" data-value="Matthew Stafford">Matthew Stafford</div><div class="option" data-selectable="" data-value="Colin Kaepernick">Colin Kaepernick</div><div class="option" data-selectable="" data-value="T.J. Yates">T.J. Yates</div><div class="option" data-selectable="" data-value="Christian Ponder">Christian Ponder</div><div class="option" data-selectable="" data-value="Jake Locker">Jake Locker</div><div class="option" data-selectable="" data-value="Nathan Enderle">Nathan Enderle</div><div class="option" data-selectable="" data-value="Nate Davis">Nate Davis</div><div class="option" data-selectable="" data-value="Daryll Clark">Daryll Clark</div><div class="option" data-selectable="" data-value="Scott Tolzien">Scott Tolzien</div><div class="option" data-selectable="" data-value="Ricky Stanzi">Ricky Stanzi</div><div class="option" data-selectable="" data-value="Sam Bradford">Sam Bradford</div><div class="option" data-selectable="" data-value="Thaddeus Lewis">Thaddeus Lewis</div><div class="option" data-selectable="" data-value="Jeff Van Camp">Jeff Van Camp</div><div class="option" data-selectable="" data-value="Greg McElroy">Greg McElroy</div><div class="option" data-selectable="" data-value="Jerrod Johnson">Jerrod Johnson</div><div class="option" data-selectable="" data-value="Case Keenum">Case Keenum</div><div class="option" data-selectable="" data-value="Josh Freeman">Josh Freeman</div><div class="option" data-selectable="" data-value="Jason White">Jason White</div><div class="option" data-selectable="" data-value="Jimmy Clausen">Jimmy Clausen</div><div class="option" data-selectable="" data-value="Ryan Mallett">Ryan Mallett</div><div class="option" data-selectable="" data-value="Cam Newton">Cam Newton</div><div class="option" data-selectable="" data-value="Ryan Tannehill">Ryan Tannehill</div><div class="option" data-selectable="" data-value="Kellen Moore">Kellen Moore</div><div class="option" data-selectable="" data-value="Brandon Weeden">Brandon Weeden</div><div class="option" data-selectable="" data-value="Tyrod Taylor">Tyrod Taylor</div><div class="option" data-selectable="" data-value="Chandler Harnish">Chandler Harnish</div><div class="option" data-selectable="" data-value="Austin Davis">Austin Davis</div><div class="option" data-selectable="" data-value="Russell Wilson">Russell Wilson</div><div class="option" data-selectable="" data-value="Ryan Lindley">Ryan Lindley</div><div class="option" data-selectable="" data-value="Nick Foles">Nick Foles</div><div class="option" data-selectable="" data-value="Kirk Cousins">Kirk Cousins</div><div class="option" data-selectable="" data-value="Clayton Thorson">Clayton Thorson</div><div class="option" data-selectable="" data-value="Trace McSorley">Trace McSorley</div><div class="option" data-selectable="" data-value="Mason Rudolph">Mason Rudolph</div><div class="option" data-selectable="" data-value="Deshaun Watson">Deshaun Watson</div><div class="option" data-selectable="" data-value="Brad Kaaya">Brad Kaaya</div><div class="option" data-selectable="" data-value="Jake Luton">Jake Luton</div><div class="option" data-selectable="" data-value="DeShone Kizer">DeShone Kizer</div><div class="option" data-selectable="" data-value="Patrick Mahomes">Patrick Mahomes</div><div class="option" data-selectable="" data-value="Quinton Flowers">Quinton Flowers</div><div class="option" data-selectable="" data-value="Brett Rypien">Brett Rypien</div><div class="option" data-selectable="" data-value="Kelly Bryant">Kelly Bryant</div><div class="option" data-selectable="" data-value="Jacory Harris">Jacory Harris</div><div class="option" data-selectable="" data-value="Landry Jones">Landry Jones</div><div class="option" data-selectable="" data-value="Matt Scott">Matt Scott</div><div class="option" data-selectable="" data-value="Robert Griffin III">Robert Griffin III</div><div class="option" data-selectable="" data-value="Darron Thomas">Darron Thomas</div><div class="option" data-selectable="" data-value="Andrew Luck">Andrew Luck</div><div class="option" data-selectable="" data-value="Blaine Gabbert">Blaine Gabbert</div><div class="option" data-selectable="" data-value="Sean Renfree">Sean Renfree</div><div class="option" data-selectable="" data-value="James Vandenberg">James Vandenberg</div><div class="option" data-selectable="" data-value="Collin Klein">Collin Klein</div><div class="option" data-selectable="" data-value="Mike Glennon">Mike Glennon</div><div class="option" data-selectable="" data-value="Ryan Nassib">Ryan Nassib</div><div class="option" data-selectable="" data-value="Tyler Wilson">Tyler Wilson</div><div class="option" data-selectable="" data-value="Zac Dysert">Zac Dysert</div><div class="option" data-selectable="" data-value="Colby Cameron">Colby Cameron</div><div class="option" data-selectable="" data-value="Josh Rosen">Josh Rosen</div><div class="option" data-selectable="" data-value="Jake Browning">Jake Browning</div><div class="option" data-selectable="" data-value="Jarrett Stidham">Jarrett Stidham</div><div class="option" data-selectable="" data-value="Brady White">Brady White</div><div class="option" data-selectable="" data-value="Sam Darnold">Sam Darnold</div><div class="option" data-selectable="" data-value="James Morgan">James Morgan</div><div class="option" data-selectable="" data-value="Steven Montez">Steven Montez</div><div class="option" data-selectable="" data-value="Joe Burrow">Joe Burrow</div><div class="option" data-selectable="" data-value="Kyle Shurmur">Kyle Shurmur</div><div class="option" data-selectable="" data-value="Lamar Jackson">Lamar Jackson</div><div class="option" data-selectable="" data-value="Tyree Jackson">Tyree Jackson</div><div class="option" data-selectable="" data-value="Kyler Murray">Kyler Murray</div><div class="option" data-selectable="" data-value="Daniel Jones">Daniel Jones</div><div class="option" data-selectable="" data-value="Josh Allen">Josh Allen</div><div class="option" data-selectable="" data-value="Drew Lock">Drew Lock</div><div class="option" data-selectable="" data-value="Brian Lewerke">Brian Lewerke</div><div class="option" data-selectable="" data-value="Chase Litton">Chase Litton</div><div class="option" data-selectable="" data-value="Kyle Trask">Kyle Trask</div><div class="option" data-selectable="" data-value="Feleipe Franks">Feleipe Franks</div><div class="option" data-selectable="" data-value="Jacob Eason">Jacob Eason</div><div class="option" data-selectable="" data-value="Shea Patterson">Shea Patterson</div><div class="option" data-selectable="" data-value="Zach Smith">Zach Smith</div><div class="option" data-selectable="" data-value="Jordan Love">Jordan Love</div><div class="option" data-selectable="" data-value="Zac Thomas">Zac Thomas</div><div class="option" data-selectable="" data-value="Cole McDonald">Cole McDonald</div><div class="option" data-selectable="" data-value="Gardner Minshew">Gardner Minshew</div><div class="option" data-selectable="" data-value="Justin Herbert">Justin Herbert</div><div class="option" data-selectable="" data-value="Dwayne Haskins">Dwayne Haskins</div><div class="option" data-selectable="" data-value="Jalen Hurts">Jalen Hurts</div><div class="option" data-selectable="" data-value="Peyton Ramsey">Peyton Ramsey</div><div class="option" data-selectable="" data-value="Ian Book">Ian Book</div><div class="option" data-selectable="" data-value="Anthony Gordon">Anthony Gordon</div><div class="option" data-selectable="" data-value="Desmond Ridder">Desmond Ridder</div><div class="option" data-selectable="" data-value="Malik Cunningham">Malik Cunningham</div><div class="option" data-selectable="" data-value="Jake Fromm">Jake Fromm</div><div class="option" data-selectable="" data-value="Kenny Pickett">Kenny Pickett</div><div class="option" data-selectable="" data-value="Hendon Hooker">Hendon Hooker</div><div class="option" data-selectable="" data-value="Mac Jones">Mac Jones</div><div class="option" data-selectable="" data-value="Tua Tagovailoa">Tua Tagovailoa</div><div class="option" data-selectable="" data-value="Sam Ehlinger">Sam Ehlinger</div><div class="option" data-selectable="" data-value="Jack Coan">Jack Coan</div><div class="option" data-selectable="" data-value="Jordan Ta&#39;amu">Jordan Ta'amu</div><div class="option" data-selectable="" data-value="Malik Willis">Malik Willis</div><div class="option" data-selectable="" data-value="Davis Mills">Davis Mills</div><div class="option" data-selectable="" data-value="Jake Haener">Jake Haener</div><div class="option" data-selectable="" data-value="Dustin Crum">Dustin Crum</div><div class="option" data-selectable="" data-value="Bailey Zappe">Bailey Zappe</div><div class="option" data-selectable="" data-value="Stetson Bennett">Stetson Bennett</div><div class="option" data-selectable="" data-value="Aidan O&#39;Connell">Aidan O'Connell</div><div class="option" data-selectable="" data-value="Clayton Tune">Clayton Tune</div><div class="option" data-selectable="" data-value="Trevor Lawrence">Trevor Lawrence</div><div class="option" data-selectable="" data-value="Michael Penix Jr.">Michael Penix Jr.</div><div class="option" data-selectable="" data-value="Joe Milton">Joe Milton</div><div class="option" data-selectable="" data-value="Jordan Travis">Jordan Travis</div><div class="option" data-selectable="" data-value="Zach Wilson">Zach Wilson</div><div class="option" data-selectable="" data-value="Will Levis">Will Levis</div><div class="option" data-selectable="" data-value="Carson Strong">Carson Strong</div><div class="option" data-selectable="" data-value="Devin Leary">Devin Leary</div><div class="option" data-selectable="" data-value="Brock Purdy">Brock Purdy</div><div class="option" data-selectable="" data-value="Sam Hartman">Sam Hartman</div><div class="option" data-selectable="" data-value="Kaleb Eleby">Kaleb Eleby</div><div class="option" data-selectable="" data-value="Matt Corral">Matt Corral</div><div class="option" data-selectable="" data-value="Justin Fields">Justin Fields</div><div class="option" data-selectable="" data-value="Dorian Thompson-Robinson">Dorian Thompson-Robinson</div><div class="option" data-selectable="" data-value="Austin Reed">Austin Reed</div><div class="option" data-selectable="" data-value="Jaren Hall">Jaren Hall</div><div class="option" data-selectable="" data-value="Bo Nix">Bo Nix</div><div class="option" data-selectable="" data-value="Spencer Rattler">Spencer Rattler</div><div class="option" data-selectable="" data-value="Jayden Daniels">Jayden Daniels</div><div class="option" data-selectable="" data-value="Sam Howell">Sam Howell</div><div class="option" data-selectable="" data-value="Max Duggan">Max Duggan</div><div class="option" data-selectable="" data-value="Kedon Slovis">Kedon Slovis</div><div class="option" data-selectable="" data-value="Anthony Richardson">Anthony Richardson</div><div class="option" data-selectable="" data-value="Drake Maye">Drake Maye</div><div class="option" data-selectable="" data-value="Caleb Williams">Caleb Williams</div><div class="option" data-selectable="" data-value="C.J. Stroud">C.J. Stroud</div><div class="option" data-selectable="" data-value="J.J. McCarthy">J.J. McCarthy</div><div class="option" data-selectable="" data-value="Michael Pratt">Michael Pratt</div><div class="option" data-selectable="" data-value="Tanner McKee">Tanner McKee</div><div class="option" data-selectable="" data-value="Bryce Young">Bryce Young</div><div class="option" data-selectable="" data-value="Aaron Murray">Aaron Murray</div><div class="option" data-selectable="" data-value="Tajh Boyd">Tajh Boyd</div><div class="option" data-selectable="" data-value="Bryn Renner">Bryn Renner</div><div class="option" data-selectable="" data-value="Denard Robinson">Denard Robinson</div><div class="option" data-selectable="" data-value="Logan Thomas">Logan Thomas</div><div class="option" data-selectable="" data-value="Zach Mettenberger">Zach Mettenberger</div><div class="option" data-selectable="" data-value="Matt Barkley">Matt Barkley</div><div class="option" data-selectable="" data-value="Brock Osweiler">Brock Osweiler</div><div class="option" data-selectable="" data-value="David Fales">David Fales</div><div class="option" data-selectable="" data-value="Bryce Petty">Bryce Petty</div><div class="option" data-selectable="" data-value="Jordan Lynch">Jordan Lynch</div><div class="option" data-selectable="" data-value="Derek Carr">Derek Carr</div><div class="option" data-selectable="" data-value="Geno Smith">Geno Smith</div><div class="option" data-selectable="" data-value="Shane Carden">Shane Carden</div><div class="option" data-selectable="" data-value="Anthony Boone">Anthony Boone</div><div class="option" data-selectable="" data-value="Stephen Morris">Stephen Morris</div><div class="option" data-selectable="" data-value="Cody Fajardo">Cody Fajardo</div><div class="option" data-selectable="" data-value="Tyler Bray">Tyler Bray</div><div class="option" data-selectable="" data-value="Keith Wenning">Keith Wenning</div><div class="option" data-selectable="" data-value="Blake Sims">Blake Sims</div><div class="option" data-selectable="" data-value="Connor Shaw">Connor Shaw</div><div class="option" data-selectable="" data-value="Sean Mannion">Sean Mannion</div><div class="option" data-selectable="" data-value="Connor Halliday">Connor Halliday</div><div class="option" data-selectable="" data-value="Brandon Doughty">Brandon Doughty</div><div class="option" data-selectable="" data-value="Blake Bortles">Blake Bortles</div><div class="option" data-selectable="" data-value="Brandon Bridge">Brandon Bridge</div><div class="option" data-selectable="" data-value="Marcus Mariota">Marcus Mariota</div><div class="option" data-selectable="" data-value="Teddy Bridgewater">Teddy Bridgewater</div><div class="option" data-selectable="" data-value="Vernon Adams Jr.">Vernon Adams Jr.</div><div class="option" data-selectable="" data-value="Jeff Driskel">Jeff Driskel</div><div class="option" data-selectable="" data-value="Brett Hundley">Brett Hundley</div><div class="option" data-selectable="" data-value="Dak Prescott">Dak Prescott</div><div class="option" data-selectable="" data-value="Jacoby Brissett">Jacoby Brissett</div><div class="option" data-selectable="" data-value="Connor Cook">Connor Cook</div><div class="option" data-selectable="" data-value="Cody Kessler">Cody Kessler</div><div class="option" data-selectable="" data-value="Tom Savage">Tom Savage</div><div class="option" data-selectable="" data-value="Joel Stave">Joel Stave</div><div class="option" data-selectable="" data-value="Garrett Grayson">Garrett Grayson</div><div class="option" data-selectable="" data-value="Brandon Allen">Brandon Allen</div><div class="option" data-selectable="" data-value="Kevin Hogan">Kevin Hogan</div><div class="option" data-selectable="" data-value="Trevone Boykin">Trevone Boykin</div><div class="option" data-selectable="" data-value="Johnny Manziel">Johnny Manziel</div><div class="option" data-selectable="" data-value="Jameis Winston">Jameis Winston</div><div class="option" data-selectable="" data-value="Mitch Leidner">Mitch Leidner</div><div class="option" data-selectable="" data-value="Cooper Rush">Cooper Rush</div><div class="option" data-selectable="" data-value="Nathan Peterman">Nathan Peterman</div><div class="option" data-selectable="" data-value="Trevor Knight">Trevor Knight</div><div class="option" data-selectable="" data-value="Paxton Lynch">Paxton Lynch</div><div class="option" data-selectable="" data-value="Seth Russell">Seth Russell</div><div class="option" data-selectable="" data-value="Nate Sudfeld">Nate Sudfeld</div><div class="option" data-selectable="" data-value="C.J. Beathard">C.J. Beathard</div><div class="option" data-selectable="" data-value="Mitch Trubisky">Mitch Trubisky</div><div class="option" data-selectable="" data-value="Nic Shimonek">Nic Shimonek</div><div class="option" data-selectable="" data-value="Greg Ward Jr.">Greg Ward Jr.</div><div class="option" data-selectable="" data-value="J.T. Barrett">J.T. Barrett</div><div class="option" data-selectable="" data-value="Kurt Benkert">Kurt Benkert</div><div class="option" data-selectable="" data-value="Tanner Lee">Tanner Lee</div><div class="option" data-selectable="" data-value="Logan Woodside">Logan Woodside</div><div class="option" data-selectable="" data-value="Ryan Finley">Ryan Finley</div><div class="option" data-selectable="" data-value="Riley Ferguson">Riley Ferguson</div><div class="option" data-selectable="" data-value="Joshua Dobbs">Joshua Dobbs</div><div class="option" data-selectable="" data-value="Austin Allen">Austin Allen</div><div class="option" data-selectable="" data-value="Jared Goff">Jared Goff</div><div class="option" data-selectable="" data-value="Mike White">Mike White</div><div class="option" data-selectable="" data-value="Nick Marshall">Nick Marshall</div><div class="option" data-selectable="" data-value="Danny Etling">Danny Etling</div><div class="option" data-selectable="" data-value="Sefo Liufau">Sefo Liufau</div><div class="option" data-selectable="" data-value="Baker Mayfield">Baker Mayfield</div><div class="option" data-selectable="" data-value="Davis Webb">Davis Webb</div><div class="option" data-selectable="" data-value="Luke Falk">Luke Falk</div><div class="option" data-selectable="" data-value="Christian Hackenberg">Christian Hackenberg</div><div class="option" data-selectable="" data-value="Jerod Evans">Jerod Evans</div><div class="option" data-selectable="" data-value="Nick Fitzgerald">Nick Fitzgerald</div><div class="option" data-selectable="" data-value="Will Grier">Will Grier</div><div class="option" data-selectable="" data-value="Josh Davis">Josh Davis</div><div class="option" data-selectable="" data-value="Alex Holmes">Alex Holmes</div><div class="option" data-selectable="" data-value="Mark Clayton">Mark Clayton</div><div class="option" data-selectable="" data-value="Reggie Brown">Reggie Brown</div><div class="option" data-selectable="" data-value="Quinn Sypniewski">Quinn Sypniewski</div><div class="option" data-selectable="" data-value="Reggie Harrell">Reggie Harrell</div><div class="option" data-selectable="" data-value="Tab Perry">Tab Perry</div><div class="option" data-selectable="" data-value="Craig Bragg">Craig Bragg</div><div class="option" data-selectable="" data-value="Paris Warren">Paris Warren</div><div class="option" data-selectable="" data-value="Joel Dreessen">Joel Dreessen</div><div class="option" data-selectable="" data-value="Chad Owens">Chad Owens</div><div class="option" data-selectable="" data-value="Mark Bradley">Mark Bradley</div><div class="option" data-selectable="" data-value="Heath Miller">Heath Miller</div><div class="option" data-selectable="" data-value="Owen Daniels">Owen Daniels</div><div class="option" data-selectable="" data-value="Brandon Jones">Brandon Jones</div><div class="option" data-selectable="" data-value="Damarius Bilbo">Damarius Bilbo</div><div class="option" data-selectable="" data-value="Dan Sheldon">Dan Sheldon</div><div class="option" data-selectable="" data-value="Greg Jennings">Greg Jennings</div><div class="option" data-selectable="" data-value="Tony Scheffler">Tony Scheffler</div><div class="option" data-selectable="" data-value="Troy Bienemann">Troy Bienemann</div><div class="option" data-selectable="" data-value="Jeff King">Jeff King</div><div class="option" data-selectable="" data-value="Airese Currie">Airese Currie</div><div class="option" data-selectable="" data-value="Braylon Edwards">Braylon Edwards</div><div class="option" data-selectable="" data-value="Martin Nance">Martin Nance</div><div class="option" data-selectable="" data-value="Jovon Bouknight">Jovon Bouknight</div><div class="option" data-selectable="" data-value="Fred Gibson">Fred Gibson</div><div class="option" data-selectable="" data-value="Craphonso Thorpe">Craphonso Thorpe</div><div class="option" data-selectable="" data-value="Willie Reid">Willie Reid</div><div class="option" data-selectable="" data-value="Todd Watkins">Todd Watkins</div><div class="option" data-selectable="" data-value="Courtney Roby">Courtney Roby</div><div class="option" data-selectable="" data-value="Charles Davis">Charles Davis</div><div class="option" data-selectable="" data-value="Roscoe Parrish">Roscoe Parrish</div><div class="option" data-selectable="" data-value="Kevin Everett">Kevin Everett</div><div class="option" data-selectable="" data-value="Terrence Murphy">Terrence Murphy</div><div class="option" data-selectable="" data-value="Jason Carter">Jason Carter</div><div class="option" data-selectable="" data-value="David Kirtman">David Kirtman</div><div class="option" data-selectable="" data-value="Demetrius Williams">Demetrius Williams</div><div class="option" data-selectable="" data-value="Tim Day">Tim Day</div><div class="option" data-selectable="" data-value="Cooper Wallace">Cooper Wallace</div><div class="option" data-selectable="" data-value="Adam Jennings">Adam Jennings</div><div class="option" data-selectable="" data-value="J.R. Russell">J.R. Russell</div><div class="option" data-selectable="" data-value="Dallas Baker">Dallas Baker</div><div class="option" data-selectable="" data-value="Jeff Webb">Jeff Webb</div><div class="option" data-selectable="" data-value="Ed Hinkel">Ed Hinkel</div><div class="option" data-selectable="" data-value="Anthony Mix">Anthony Mix</div><div class="option" data-selectable="" data-value="Hank Baskett">Hank Baskett</div><div class="option" data-selectable="" data-value="Yamon Figurs">Yamon Figurs</div><div class="option" data-selectable="" data-value="Sinorice Moss">Sinorice Moss</div><div class="option" data-selectable="" data-value="Martrez Milner">Martrez Milner</div><div class="option" data-selectable="" data-value="Leonard Pope">Leonard Pope</div><div class="option" data-selectable="" data-value="Santonio Holmes">Santonio Holmes</div><div class="option" data-selectable="" data-value="Brandon Williams">Brandon Williams</div><div class="option" data-selectable="" data-value="Clinton Solomon">Clinton Solomon</div><div class="option" data-selectable="" data-value="Jason Avant">Jason Avant</div><div class="option" data-selectable="" data-value="Steve Breaston">Steve Breaston</div><div class="option" data-selectable="" data-value="Matt Trannon">Matt Trannon</div><div class="option" data-selectable="" data-value="Matt Spaeth">Matt Spaeth</div><div class="option" data-selectable="" data-value="Mike Hass">Mike Hass</div><div class="option" data-selectable="" data-value="Joe Newton">Joe Newton</div><div class="option" data-selectable="" data-value="Skyler Green">Skyler Green</div><div class="option" data-selectable="" data-value="T.J. Williams">T.J. Williams</div><div class="option" data-selectable="" data-value="Derek Fine">Derek Fine</div><div class="option" data-selectable="" data-value="Charles Gordon">Charles Gordon</div><div class="option" data-selectable="" data-value="Jemalle Cornelius">Jemalle Cornelius</div><div class="option" data-selectable="" data-value="Chris Hannon">Chris Hannon</div><div class="option" data-selectable="" data-value="Steve Savoy">Steve Savoy</div><div class="option" data-selectable="" data-value="Anthony Fasano">Anthony Fasano</div><div class="option" data-selectable="" data-value="Rhema McKnight">Rhema McKnight</div><div class="option" data-selectable="" data-value="Maurice Stovall">Maurice Stovall</div><div class="option" data-selectable="" data-value="Legedu Naanee">Legedu Naanee</div><div class="option" data-selectable="" data-value="Chris Henry">Chris Henry</div><div class="option" data-selectable="" data-value="Troy Williamson">Troy Williamson</div><div class="option" data-selectable="" data-value="Drisan James">Drisan James</div><div class="option" data-selectable="" data-value="Devin Aromashodu">Devin Aromashodu</div><div class="option" data-selectable="" data-value="Ben Obomanu">Ben Obomanu</div><div class="option" data-selectable="" data-value="Courtney Taylor">Courtney Taylor</div><div class="option" data-selectable="" data-value="David Anderson">David Anderson</div><div class="option" data-selectable="" data-value="David Thomas">David Thomas</div><div class="option" data-selectable="" data-value="Paul Williams">Paul Williams</div><div class="option" data-selectable="" data-value="Garrett Mills">Garrett Mills</div><div class="option" data-selectable="" data-value="Daniel Coats">Daniel Coats</div><div class="option" data-selectable="" data-value="Derek Hagan">Derek Hagan</div><div class="option" data-selectable="" data-value="Chad Upshaw">Chad Upshaw</div><div class="option" data-selectable="" data-value="Clark Harris">Clark Harris</div><div class="option" data-selectable="" data-value="Joe Klopfenstein">Joe Klopfenstein</div><div class="option" data-selectable="" data-value="Lawrence Vickers">Lawrence Vickers</div><div class="option" data-selectable="" data-value="Will Blackmon">Will Blackmon</div><div class="option" data-selectable="" data-value="D&#39;Juan Woods">D'Juan Woods</div><div class="option" data-selectable="" data-value="Brandon Marshall">Brandon Marshall</div><div class="option" data-selectable="" data-value="Chansi Stuckey">Chansi Stuckey</div><div class="option" data-selectable="" data-value="Joel Filani">Joel Filani</div><div class="option" data-selectable="" data-value="Jarrett Hicks">Jarrett Hicks</div><div class="option" data-selectable="" data-value="Ben Patrick">Ben Patrick</div><div class="option" data-selectable="" data-value="James Jones">James Jones</div><div class="option" data-selectable="" data-value="Chris Davis">Chris Davis</div><div class="option" data-selectable="" data-value="Lorne Sam">Lorne Sam</div><div class="option" data-selectable="" data-value="Chauncey Stovall">Chauncey Stovall</div><div class="option" data-selectable="" data-value="Travis Wilson">Travis Wilson</div><div class="option" data-selectable="" data-value="Joe West">Joe West</div><div class="option" data-selectable="" data-value="Dominique Byrd">Dominique Byrd</div><div class="option" data-selectable="" data-value="Marcedes Lewis">Marcedes Lewis</div><div class="option" data-selectable="" data-value="Cory Rodgers">Cory Rodgers</div><div class="option" data-selectable="" data-value="Syndric Steptoe">Syndric Steptoe</div><div class="option" data-selectable="" data-value="Craig Stevens">Craig Stevens</div><div class="option" data-selectable="" data-value="Mark Bradford">Mark Bradford</div><div class="option" data-selectable="" data-value="Evan Moore">Evan Moore</div><div class="option" data-selectable="" data-value="Steve Smith">Steve Smith</div><div class="option" data-selectable="" data-value="Jason Hill">Jason Hill</div><div class="option" data-selectable="" data-value="Todd Blythe">Todd Blythe</div><div class="option" data-selectable="" data-value="Martin Rucker">Martin Rucker</div><div class="option" data-selectable="" data-value="Billy Pittman">Billy Pittman</div><div class="option" data-selectable="" data-value="Limas Sweed">Limas Sweed</div><div class="option" data-selectable="" data-value="De&#39;Cody Fagg">De'Cody Fagg</div><div class="option" data-selectable="" data-value="Vernon Davis">Vernon Davis</div><div class="option" data-selectable="" data-value="Dan Gronkowski">Dan Gronkowski</div><div class="option" data-selectable="" data-value="Adarius Bowman">Adarius Bowman</div><div class="option" data-selectable="" data-value="Scott Chandler">Scott Chandler</div><div class="option" data-selectable="" data-value="Anthony Gonzalez">Anthony Gonzalez</div><div class="option" data-selectable="" data-value="Dustin Keller">Dustin Keller</div><div class="option" data-selectable="" data-value="Greg Lee">Greg Lee</div><div class="option" data-selectable="" data-value="David Clowney">David Clowney</div><div class="option" data-selectable="" data-value="Darnell Jenkins">Darnell Jenkins</div><div class="option" data-selectable="" data-value="Chad Jackson">Chad Jackson</div><div class="option" data-selectable="" data-value="Keenan Burton">Keenan Burton</div><div class="option" data-selectable="" data-value="Jacob Tamme">Jacob Tamme</div><div class="option" data-selectable="" data-value="Dwayne Bowe">Dwayne Bowe</div><div class="option" data-selectable="" data-value="Robert Meachem">Robert Meachem</div><div class="option" data-selectable="" data-value="Bret Smith">Bret Smith</div><div class="option" data-selectable="" data-value="Jayson Swain">Jayson Swain</div><div class="option" data-selectable="" data-value="Ryne Robinson">Ryne Robinson</div><div class="option" data-selectable="" data-value="Donnie Avery">Donnie Avery</div><div class="option" data-selectable="" data-value="Jordy Nelson">Jordy Nelson</div><div class="option" data-selectable="" data-value="Marcus Smith">Marcus Smith</div><div class="option" data-selectable="" data-value="Jason Rivers">Jason Rivers</div><div class="option" data-selectable="" data-value="Kevin Robinson">Kevin Robinson</div><div class="option" data-selectable="" data-value="Harry Douglas">Harry Douglas</div><div class="option" data-selectable="" data-value="Derek Schouman">Derek Schouman</div><div class="option" data-selectable="" data-value="John Carlson">John Carlson</div><div class="option" data-selectable="" data-value="Greg Olsen">Greg Olsen</div><div class="option" data-selectable="" data-value="Jonathan Holland">Jonathan Holland</div><div class="option" data-selectable="" data-value="Chandler Williams">Chandler Williams</div><div class="option" data-selectable="" data-value="John Phillips">John Phillips</div><div class="option" data-selectable="" data-value="Sammie Stroughter">Sammie Stroughter</div><div class="option" data-selectable="" data-value="Fred Davis">Fred Davis</div><div class="option" data-selectable="" data-value="Josh Morgan">Josh Morgan</div><div class="option" data-selectable="" data-value="Justin Harper">Justin Harper</div><div class="option" data-selectable="" data-value="Eddie Royal">Eddie Royal</div><div class="option" data-selectable="" data-value="Joey Haynos">Joey Haynos</div><div class="option" data-selectable="" data-value="Paul Hubbard">Paul Hubbard</div><div class="option" data-selectable="" data-value="Dennis Pitta">Dennis Pitta</div><div class="option" data-selectable="" data-value="Jarett Dillard">Jarett Dillard</div><div class="option" data-selectable="" data-value="Bo Scaife">Bo Scaife</div><div class="option" data-selectable="" data-value="Brandon Pettigrew">Brandon Pettigrew</div><div class="option" data-selectable="" data-value="Will Franklin">Will Franklin</div><div class="option" data-selectable="" data-value="Anthony Hill">Anthony Hill</div><div class="option" data-selectable="" data-value="Brandon Breazell">Brandon Breazell</div><div class="option" data-selectable="" data-value="Darius Reynaud">Darius Reynaud</div><div class="option" data-selectable="" data-value="Kory Sperry">Kory Sperry</div><div class="option" data-selectable="" data-value="Cornelius Ingram">Cornelius Ingram</div><div class="option" data-selectable="" data-value="Zach Miller">Zach Miller</div><div class="option" data-selectable="" data-value="Aaron Kelly">Aaron Kelly</div><div class="option" data-selectable="" data-value="Danny Amendola">Danny Amendola</div><div class="option" data-selectable="" data-value="Ryan Grice-Mullen">Ryan Grice-Mullen</div><div class="option" data-selectable="" data-value="James Hardy">James Hardy</div><div class="option" data-selectable="" data-value="Kellen Davis">Kellen Davis</div><div class="option" data-selectable="" data-value="Adrian Arrington">Adrian Arrington</div><div class="option" data-selectable="" data-value="Travis Brown">Travis Brown</div><div class="option" data-selectable="" data-value="Dorien Bryant">Dorien Bryant</div><div class="option" data-selectable="" data-value="Dwayne Jarrett">Dwayne Jarrett</div><div class="option" data-selectable="" data-value="Early Doucet">Early Doucet</div><div class="option" data-selectable="" data-value="Lavelle Hawkins">Lavelle Hawkins</div><div class="option" data-selectable="" data-value="Calvin Johnson">Calvin Johnson</div><div class="option" data-selectable="" data-value="Jaison Williams">Jaison Williams</div><div class="option" data-selectable="" data-value="Bear Pascoe">Bear Pascoe</div><div class="option" data-selectable="" data-value="Jonny Harline">Jonny Harline</div><div class="option" data-selectable="" data-value="Peyton Hillis">Peyton Hillis</div><div class="option" data-selectable="" data-value="Austin Collie">Austin Collie</div><div class="option" data-selectable="" data-value="Marcus Monk">Marcus Monk</div><div class="option" data-selectable="" data-value="Tom Santi">Tom Santi</div><div class="option" data-selectable="" data-value="Kevin Jurovich">Kevin Jurovich</div><div class="option" data-selectable="" data-value="Chris Ogbonnaya">Chris Ogbonnaya</div><div class="option" data-selectable="" data-value="Jordan Shipley">Jordan Shipley</div><div class="option" data-selectable="" data-value="Shawn Nelson">Shawn Nelson</div><div class="option" data-selectable="" data-value="Davon Drew">Davon Drew</div><div class="option" data-selectable="" data-value="Brooks Foster">Brooks Foster</div><div class="option" data-selectable="" data-value="Nate Swift">Nate Swift</div><div class="option" data-selectable="" data-value="Darrell Strong">Darrell Strong</div><div class="option" data-selectable="" data-value="Marcus Henry">Marcus Henry</div><div class="option" data-selectable="" data-value="Gary Barnidge">Gary Barnidge</div><div class="option" data-selectable="" data-value="Darrius Heyward-Bey">Darrius Heyward-Bey</div><div class="option" data-selectable="" data-value="Mario Urrutia">Mario Urrutia</div><div class="option" data-selectable="" data-value="Tony Moeaki">Tony Moeaki</div><div class="option" data-selectable="" data-value="Deon Butler">Deon Butler</div><div class="option" data-selectable="" data-value="Derrick Williams">Derrick Williams</div><div class="option" data-selectable="" data-value="Mardy Gilyard">Mardy Gilyard</div><div class="option" data-selectable="" data-value="Stephen Williams">Stephen Williams</div><div class="option" data-selectable="" data-value="Scott Long">Scott Long</div><div class="option" data-selectable="" data-value="Sidney Rice">Sidney Rice</div><div class="option" data-selectable="" data-value="DeMarco Sampson">DeMarco Sampson</div><div class="option" data-selectable="" data-value="Jerard Rabb">Jerard Rabb</div><div class="option" data-selectable="" data-value="Davone Bess">Davone Bess</div><div class="option" data-selectable="" data-value="Seyi Ajirotutu">Seyi Ajirotutu</div><div class="option" data-selectable="" data-value="Chastin West">Chastin West</div><div class="option" data-selectable="" data-value="Eddie Williams">Eddie Williams</div><div class="option" data-selectable="" data-value="Rob Myers">Rob Myers</div><div class="option" data-selectable="" data-value="Aundrae Allison">Aundrae Allison</div><div class="option" data-selectable="" data-value="Brandon Tate">Brandon Tate</div><div class="option" data-selectable="" data-value="David Johnson">David Johnson</div><div class="option" data-selectable="" data-value="Mohamed Massaquoi">Mohamed Massaquoi</div><div class="option" data-selectable="" data-value="Taurus Johnson">Taurus Johnson</div><div class="option" data-selectable="" data-value="Ed Dickson">Ed Dickson</div><div class="option" data-selectable="" data-value="Nyan Boateng">Nyan Boateng</div><div class="option" data-selectable="" data-value="Louis Murphy">Louis Murphy</div><div class="option" data-selectable="" data-value="Marshay Green">Marshay Green</div><div class="option" data-selectable="" data-value="Jared Cook">Jared Cook</div><div class="option" data-selectable="" data-value="Kenny McKinley">Kenny McKinley</div><div class="option" data-selectable="" data-value="Greg Orton">Greg Orton</div><div class="option" data-selectable="" data-value="Colin Peek">Colin Peek</div><div class="option" data-selectable="" data-value="Brian Hartline">Brian Hartline</div><div class="option" data-selectable="" data-value="Brian Robiskie">Brian Robiskie</div><div class="option" data-selectable="" data-value="DeSean Jackson">DeSean Jackson</div><div class="option" data-selectable="" data-value="Cameron Morrah">Cameron Morrah</div><div class="option" data-selectable="" data-value="Jordan Norwood">Jordan Norwood</div><div class="option" data-selectable="" data-value="Andrew Means">Andrew Means</div><div class="option" data-selectable="" data-value="Juaquin Iglesias">Juaquin Iglesias</div><div class="option" data-selectable="" data-value="Manuel Johnson">Manuel Johnson</div><div class="option" data-selectable="" data-value="Malcolm Kelly">Malcolm Kelly</div><div class="option" data-selectable="" data-value="Brandon Gibson">Brandon Gibson</div><div class="option" data-selectable="" data-value="Jeremy Childs">Jeremy Childs</div><div class="option" data-selectable="" data-value="Earl Bennett">Earl Bennett</div><div class="option" data-selectable="" data-value="Patrick Turner">Patrick Turner</div><div class="option" data-selectable="" data-value="Quan Cosby">Quan Cosby</div><div class="option" data-selectable="" data-value="Jermichael Finley">Jermichael Finley</div><div class="option" data-selectable="" data-value="Chris McGaha">Chris McGaha</div><div class="option" data-selectable="" data-value="Eric Decker">Eric Decker</div><div class="option" data-selectable="" data-value="Blair White">Blair White</div><div class="option" data-selectable="" data-value="Brandon LaFell">Brandon LaFell</div><div class="option" data-selectable="" data-value="Tiquan Underwood">Tiquan Underwood</div><div class="option" data-selectable="" data-value="Jeremy Williams">Jeremy Williams</div><div class="option" data-selectable="" data-value="Kerry Meier">Kerry Meier</div><div class="option" data-selectable="" data-value="Chase Coffman">Chase Coffman</div><div class="option" data-selectable="" data-value="Emmanuel Sanders">Emmanuel Sanders</div><div class="option" data-selectable="" data-value="Martellus Bennett">Martellus Bennett</div><div class="option" data-selectable="" data-value="Kevin Ogletree">Kevin Ogletree</div><div class="option" data-selectable="" data-value="Travis Beckum">Travis Beckum</div><div class="option" data-selectable="" data-value="Garrett Graham">Garrett Graham</div><div class="option" data-selectable="" data-value="Riar Geer">Riar Geer</div><div class="option" data-selectable="" data-value="Mike Thomas">Mike Thomas</div><div class="option" data-selectable="" data-value="Jordan Kent">Jordan Kent</div><div class="option" data-selectable="" data-value="Mario Manningham">Mario Manningham</div><div class="option" data-selectable="" data-value="Terrance Turner">Terrance Turner</div><div class="option" data-selectable="" data-value="Stanley Havili">Stanley Havili</div><div class="option" data-selectable="" data-value="Anthony McCoy">Anthony McCoy</div><div class="option" data-selectable="" data-value="Jimmy Young">Jimmy Young</div><div class="option" data-selectable="" data-value="Dorin Dickerson">Dorin Dickerson</div><div class="option" data-selectable="" data-value="Virgil Green">Virgil Green</div><div class="option" data-selectable="" data-value="Marko Mitchell">Marko Mitchell</div><div class="option" data-selectable="" data-value="Hakeem Nicks">Hakeem Nicks</div><div class="option" data-selectable="" data-value="Dedrick Epps">Dedrick Epps</div><div class="option" data-selectable="" data-value="Preston Parker">Preston Parker</div><div class="option" data-selectable="" data-value="Taj Smith">Taj Smith</div><div class="option" data-selectable="" data-value="Devin Thomas">Devin Thomas</div><div class="option" data-selectable="" data-value="Greg Salas">Greg Salas</div><div class="option" data-selectable="" data-value="Darius Passmore">Darius Passmore</div><div class="option" data-selectable="" data-value="Jacoby Ford">Jacoby Ford</div><div class="option" data-selectable="" data-value="Dwayne Harris">Dwayne Harris</div><div class="option" data-selectable="" data-value="Jordan White">Jordan White</div><div class="option" data-selectable="" data-value="Jamar Newsome">Jamar Newsome</div><div class="option" data-selectable="" data-value="Michael Crabtree">Michael Crabtree</div><div class="option" data-selectable="" data-value="Rob Housler">Rob Housler</div><div class="option" data-selectable="" data-value="Ryan Wolfe">Ryan Wolfe</div><div class="option" data-selectable="" data-value="Riley Cooper">Riley Cooper</div><div class="option" data-selectable="" data-value="Brandon James">Brandon James</div><div class="option" data-selectable="" data-value="Lance Kendricks">Lance Kendricks</div><div class="option" data-selectable="" data-value="Andrew Quarless">Andrew Quarless</div><div class="option" data-selectable="" data-value="Taylor Price">Taylor Price</div><div class="option" data-selectable="" data-value="Jermaine Gresham">Jermaine Gresham</div><div class="option" data-selectable="" data-value="Marshall Williams">Marshall Williams</div><div class="option" data-selectable="" data-value="Demaryius Thomas">Demaryius Thomas</div><div class="option" data-selectable="" data-value="Owen Spencer">Owen Spencer</div><div class="option" data-selectable="" data-value="Maurice Purify">Maurice Purify</div><div class="option" data-selectable="" data-value="Damian Williams">Damian Williams</div><div class="option" data-selectable="" data-value="Jamel Hamler">Jamel Hamler</div><div class="option" data-selectable="" data-value="Luke Stocker">Luke Stocker</div><div class="option" data-selectable="" data-value="Mike Williams">Mike Williams</div><div class="option" data-selectable="" data-value="Richard Sherman">Richard Sherman</div><div class="option" data-selectable="" data-value="Charlie Gantt">Charlie Gantt</div><div class="option" data-selectable="" data-value="Carlton Mitchell">Carlton Mitchell</div><div class="option" data-selectable="" data-value="Kenny Britt">Kenny Britt</div><div class="option" data-selectable="" data-value="Shay Hodge">Shay Hodge</div><div class="option" data-selectable="" data-value="Mike Wallace">Mike Wallace</div><div class="option" data-selectable="" data-value="Danario Alexander">Danario Alexander</div><div class="option" data-selectable="" data-value="Jeremy Maclin">Jeremy Maclin</div><div class="option" data-selectable="" data-value="Jared Perry">Jared Perry</div><div class="option" data-selectable="" data-value="Daniel Hardy">Daniel Hardy</div><div class="option" data-selectable="" data-value="Jeron Mastrud">Jeron Mastrud</div><div class="option" data-selectable="" data-value="Lee Smith">Lee Smith</div><div class="option" data-selectable="" data-value="Aaron Hernandez">Aaron Hernandez</div><div class="option" data-selectable="" data-value="Rob Gronkowski">Rob Gronkowski</div><div class="option" data-selectable="" data-value="Dezmon Briscoe">Dezmon Briscoe</div><div class="option" data-selectable="" data-value="Ryan Broyles">Ryan Broyles</div><div class="option" data-selectable="" data-value="Arrelious Benn">Arrelious Benn</div><div class="option" data-selectable="" data-value="Marcus Easley">Marcus Easley</div><div class="option" data-selectable="" data-value="Kealoha Pilares">Kealoha Pilares</div><div class="option" data-selectable="" data-value="Demetrius Byrd">Demetrius Byrd</div><div class="option" data-selectable="" data-value="Terrence Toliver">Terrence Toliver</div><div class="option" data-selectable="" data-value="Austin Pettis">Austin Pettis</div><div class="option" data-selectable="" data-value="Titus Young">Titus Young</div><div class="option" data-selectable="" data-value="James Casey">James Casey</div><div class="option" data-selectable="" data-value="Armon Binns">Armon Binns</div><div class="option" data-selectable="" data-value="Dez Bryant">Dez Bryant</div><div class="option" data-selectable="" data-value="Josh Cooper">Josh Cooper</div><div class="option" data-selectable="" data-value="Dane Sanzenbacher">Dane Sanzenbacher</div><div class="option" data-selectable="" data-value="Denarius Moore">Denarius Moore</div><div class="option" data-selectable="" data-value="Leonard Hankerson">Leonard Hankerson</div><div class="option" data-selectable="" data-value="Rhett Ellison">Rhett Ellison</div><div class="option" data-selectable="" data-value="Ronald Johnson">Ronald Johnson</div><div class="option" data-selectable="" data-value="Marvin McNutt">Marvin McNutt</div><div class="option" data-selectable="" data-value="Allen Reisner">Allen Reisner</div><div class="option" data-selectable="" data-value="Nick Toon">Nick Toon</div><div class="option" data-selectable="" data-value="James Rodgers">James Rodgers</div><div class="option" data-selectable="" data-value="Torrey Smith">Torrey Smith</div><div class="option" data-selectable="" data-value="Danny Coale">Danny Coale</div><div class="option" data-selectable="" data-value="Coby Fleener">Coby Fleener</div><div class="option" data-selectable="" data-value="Drake Dunsmore">Drake Dunsmore</div><div class="option" data-selectable="" data-value="Nick Provo">Nick Provo</div><div class="option" data-selectable="" data-value="Dwight Jones">Dwight Jones</div><div class="option" data-selectable="" data-value="Greg Little">Greg Little</div><div class="option" data-selectable="" data-value="Ryan Whalen">Ryan Whalen</div><div class="option" data-selectable="" data-value="Darius Hanks">Darius Hanks</div><div class="option" data-selectable="" data-value="Marquis Maze">Marquis Maze</div><div class="option" data-selectable="" data-value="Jerrel Jernigan">Jerrel Jernigan</div><div class="option" data-selectable="" data-value="Jeremy Kerley">Jeremy Kerley</div><div class="option" data-selectable="" data-value="LaVon Brazill">LaVon Brazill</div><div class="option" data-selectable="" data-value="Golden Tate">Golden Tate</div><div class="option" data-selectable="" data-value="Charles Clay">Charles Clay</div><div class="option" data-selectable="" data-value="Brennan Marion">Brennan Marion</div><div class="option" data-selectable="" data-value="Kashif Moore">Kashif Moore</div><div class="option" data-selectable="" data-value="Aldrick Robinson">Aldrick Robinson</div><div class="option" data-selectable="" data-value="Vincent Brown">Vincent Brown</div><div class="option" data-selectable="" data-value="B.J. Cunningham">B.J. Cunningham</div><div class="option" data-selectable="" data-value="Mark Dell">Mark Dell</div><div class="option" data-selectable="" data-value="Alric Arnett">Alric Arnett</div><div class="option" data-selectable="" data-value="Junior Hemingway">Junior Hemingway</div><div class="option" data-selectable="" data-value="Niles Paul">Niles Paul</div><div class="option" data-selectable="" data-value="David Richmond">David Richmond</div><div class="option" data-selectable="" data-value="Evan Rodriguez">Evan Rodriguez</div><div class="option" data-selectable="" data-value="Jock Sanders">Jock Sanders</div><div class="option" data-selectable="" data-value="D.J. Williams">D.J. Williams</div><div class="option" data-selectable="" data-value="Devon Wylie">Devon Wylie</div><div class="option" data-selectable="" data-value="Derek Moye">Derek Moye</div><div class="option" data-selectable="" data-value="Weslye Saunders">Weslye Saunders</div><div class="option" data-selectable="" data-value="Antonio Brown">Antonio Brown</div><div class="option" data-selectable="" data-value="Tyler Johnson">Tyler Johnson</div><div class="option" data-selectable="" data-value="Jeff Maehl">Jeff Maehl</div><div class="option" data-selectable="" data-value="David Paulson">David Paulson</div><div class="option" data-selectable="" data-value="Geronimo Allison">Geronimo Allison</div><div class="option" data-selectable="" data-value="Chris Godwin">Chris Godwin</div><div class="option" data-selectable="" data-value="JuJu Smith-Schuster">JuJu Smith-Schuster</div><div class="option" data-selectable="" data-value="Noah Brown">Noah Brown</div><div class="option" data-selectable="" data-value="Parris Campbell">Parris Campbell</div><div class="option" data-selectable="" data-value="Johnnie Dixon">Johnnie Dixon</div><div class="option" data-selectable="" data-value="Terry McLaurin">Terry McLaurin</div><div class="option" data-selectable="" data-value="Chris Lacy">Chris Lacy</div><div class="option" data-selectable="" data-value="James Washington">James Washington</div><div class="option" data-selectable="" data-value="Artavis Scott">Artavis Scott</div><div class="option" data-selectable="" data-value="Richie James">Richie James</div><div class="option" data-selectable="" data-value="Travis Rudolph">Travis Rudolph</div><div class="option" data-selectable="" data-value="Tyre Brady">Tyre Brady</div><div class="option" data-selectable="" data-value="Braxton Berrios">Braxton Berrios</div><div class="option" data-selectable="" data-value="Korey Robertson">Korey Robertson</div><div class="option" data-selectable="" data-value="Jamal Custis">Jamal Custis</div><div class="option" data-selectable="" data-value="Isaiah Ford">Isaiah Ford</div><div class="option" data-selectable="" data-value="Cam Phillips">Cam Phillips</div><div class="option" data-selectable="" data-value="Hunter Sharp">Hunter Sharp</div><div class="option" data-selectable="" data-value="John Johnson">John Johnson</div><div class="option" data-selectable="" data-value="Roger Lewis">Roger Lewis</div><div class="option" data-selectable="" data-value="Cody Thompson">Cody Thompson</div><div class="option" data-selectable="" data-value="Deebo Samuel">Deebo Samuel</div><div class="option" data-selectable="" data-value="Dante Pettis">Dante Pettis</div><div class="option" data-selectable="" data-value="Simmie Cobbs Jr.">Simmie Cobbs Jr.</div><div class="option" data-selectable="" data-value="Allen Lazard">Allen Lazard</div><div class="option" data-selectable="" data-value="Courtland Sutton">Courtland Sutton</div><div class="option" data-selectable="" data-value="Jordan Akins">Jordan Akins</div><div class="option" data-selectable="" data-value="Isaiah McKenzie">Isaiah McKenzie</div><div class="option" data-selectable="" data-value="Jordan Lasley">Jordan Lasley</div><div class="option" data-selectable="" data-value="Hunter Renfrow">Hunter Renfrow</div><div class="option" data-selectable="" data-value="Travis Fulgham">Travis Fulgham</div><div class="option" data-selectable="" data-value="Stanley Morgan Jr.">Stanley Morgan Jr.</div><div class="option" data-selectable="" data-value="Deon Cain">Deon Cain</div><div class="option" data-selectable="" data-value="Matt Furstenburg">Matt Furstenburg</div><div class="option" data-selectable="" data-value="James Hanna">James Hanna</div><div class="option" data-selectable="" data-value="Jake Stoneburner">Jake Stoneburner</div><div class="option" data-selectable="" data-value="Travis Kelce">Travis Kelce</div><div class="option" data-selectable="" data-value="Jeff Fuller">Jeff Fuller</div><div class="option" data-selectable="" data-value="Juron Criner">Juron Criner</div><div class="option" data-selectable="" data-value="Tavarres King">Tavarres King</div><div class="option" data-selectable="" data-value="Patrick Edwards">Patrick Edwards</div><div class="option" data-selectable="" data-value="DeAndre Brown">DeAndre Brown</div><div class="option" data-selectable="" data-value="Julio Jones">Julio Jones</div><div class="option" data-selectable="" data-value="Michael Floyd">Michael Floyd</div><div class="option" data-selectable="" data-value="A.J. Green">A.J. Green</div><div class="option" data-selectable="" data-value="Mychal Rivera">Mychal Rivera</div><div class="option" data-selectable="" data-value="Jermaine Kearse">Jermaine Kearse</div><div class="option" data-selectable="" data-value="Kendall Wright">Kendall Wright</div><div class="option" data-selectable="" data-value="Lanear Sampson">Lanear Sampson</div><div class="option" data-selectable="" data-value="Terrance Williams">Terrance Williams</div><div class="option" data-selectable="" data-value="Justin Blackmon">Justin Blackmon</div><div class="option" data-selectable="" data-value="Gerell Robinson">Gerell Robinson</div><div class="option" data-selectable="" data-value="Chris Owusu">Chris Owusu</div><div class="option" data-selectable="" data-value="Marvin Jones Jr.">Marvin Jones Jr.</div><div class="option" data-selectable="" data-value="Chris Pantale">Chris Pantale</div><div class="option" data-selectable="" data-value="Bradie Ewing">Bradie Ewing</div><div class="option" data-selectable="" data-value="Jerrell Jackson">Jerrell Jackson</div><div class="option" data-selectable="" data-value="David Reed">David Reed</div><div class="option" data-selectable="" data-value="Michael Egnew">Michael Egnew</div><div class="option" data-selectable="" data-value="Dwayne Allen">Dwayne Allen</div><div class="option" data-selectable="" data-value="Marcus Davis">Marcus Davis</div><div class="option" data-selectable="" data-value="Chris Givens">Chris Givens</div><div class="option" data-selectable="" data-value="Tandon Doss">Tandon Doss</div><div class="option" data-selectable="" data-value="A.J. Jenkins">A.J. Jenkins</div><div class="option" data-selectable="" data-value="Verran Tucker">Verran Tucker</div><div class="option" data-selectable="" data-value="Brandon Banks">Brandon Banks</div><div class="option" data-selectable="" data-value="Keshawn Martin">Keshawn Martin</div><div class="option" data-selectable="" data-value="DeVier Posey">DeVier Posey</div><div class="option" data-selectable="" data-value="Jarrett Boykin">Jarrett Boykin</div><div class="option" data-selectable="" data-value="Cameron Graham">Cameron Graham</div><div class="option" data-selectable="" data-value="Travis Benjamin">Travis Benjamin</div><div class="option" data-selectable="" data-value="Tommy Streeter">Tommy Streeter</div><div class="option" data-selectable="" data-value="Joe Adams">Joe Adams</div><div class="option" data-selectable="" data-value="Greg Childs">Greg Childs</div><div class="option" data-selectable="" data-value="Chris Gragg">Chris Gragg</div><div class="option" data-selectable="" data-value="Jarius Wright">Jarius Wright</div><div class="option" data-selectable="" data-value="Darvin Adams">Darvin Adams</div><div class="option" data-selectable="" data-value="Ryan Otten">Ryan Otten</div><div class="option" data-selectable="" data-value="T.Y. Hilton">T.Y. Hilton</div><div class="option" data-selectable="" data-value="Joseph Fauria">Joseph Fauria</div><div class="option" data-selectable="" data-value="Kyle Rudolph">Kyle Rudolph</div><div class="option" data-selectable="" data-value="Jauan Jennings">Jauan Jennings</div><div class="option" data-selectable="" data-value="Dede Westbrook">Dede Westbrook</div><div class="option" data-selectable="" data-value="Quadree Henderson">Quadree Henderson</div><div class="option" data-selectable="" data-value="Christian Kirk">Christian Kirk</div><div class="option" data-selectable="" data-value="Antonio Callaway">Antonio Callaway</div><div class="option" data-selectable="" data-value="Terry Godwin">Terry Godwin</div><div class="option" data-selectable="" data-value="D.J. Moore">D.J. Moore</div><div class="option" data-selectable="" data-value="K.J. Hill">K.J. Hill</div><div class="option" data-selectable="" data-value="Tony Brown">Tony Brown</div><div class="option" data-selectable="" data-value="Keke Coutee">Keke Coutee</div><div class="option" data-selectable="" data-value="Jovon Durante">Jovon Durante</div><div class="option" data-selectable="" data-value="Gary Jennings">Gary Jennings</div><div class="option" data-selectable="" data-value="James Proche">James Proche</div><div class="option" data-selectable="" data-value="Jaylen Smith">Jaylen Smith</div><div class="option" data-selectable="" data-value="Jakobi Meyers">Jakobi Meyers</div><div class="option" data-selectable="" data-value="K.J. Osborn">K.J. Osborn</div><div class="option" data-selectable="" data-value="Darius Slayton">Darius Slayton</div><div class="option" data-selectable="" data-value="Ryan Davis">Ryan Davis</div><div class="option" data-selectable="" data-value="Omar Bayless">Omar Bayless</div><div class="option" data-selectable="" data-value="Lawrence Cager">Lawrence Cager</div><div class="option" data-selectable="" data-value="Hakeem Butler">Hakeem Butler</div><div class="option" data-selectable="" data-value="Auden Tate">Auden Tate</div><div class="option" data-selectable="" data-value="Nyqwan Murray">Nyqwan Murray</div><div class="option" data-selectable="" data-value="Emanuel Hall">Emanuel Hall</div><div class="option" data-selectable="" data-value="Johnathon Johnson">Johnathon Johnson</div><div class="option" data-selectable="" data-value="Calvin Ridley">Calvin Ridley</div><div class="option" data-selectable="" data-value="Tavares Martin Jr.">Tavares Martin Jr.</div><div class="option" data-selectable="" data-value="Juwan Johnson">Juwan Johnson</div><div class="option" data-selectable="" data-value="Felton Davis III">Felton Davis III</div><div class="option" data-selectable="" data-value="Darrell Stewart Jr.">Darrell Stewart Jr.</div><div class="option" data-selectable="" data-value="Van Jefferson">Van Jefferson</div><div class="option" data-selectable="" data-value="Jacob Harris">Jacob Harris</div><div class="option" data-selectable="" data-value="Miles Boykin">Miles Boykin</div><div class="option" data-selectable="" data-value="Chris Finke">Chris Finke</div><div class="option" data-selectable="" data-value="Diontae Johnson">Diontae Johnson</div><div class="option" data-selectable="" data-value="Deontay Burnett">Deontay Burnett</div><div class="option" data-selectable="" data-value="Antonio Gandy-Golden">Antonio Gandy-Golden</div><div class="option" data-selectable="" data-value="Freddie Swain">Freddie Swain</div><div class="option" data-selectable="" data-value="Tyrie Cleveland">Tyrie Cleveland</div><div class="option" data-selectable="" data-value="Mecole Hardman">Mecole Hardman</div><div class="option" data-selectable="" data-value="Riley Ridley">Riley Ridley</div><div class="option" data-selectable="" data-value="Javon Wims">Javon Wims</div><div class="option" data-selectable="" data-value="Marquez Callaway">Marquez Callaway</div><div class="option" data-selectable="" data-value="Quartney Davis">Quartney Davis</div><div class="option" data-selectable="" data-value="Kendrick Rogers">Kendrick Rogers</div><div class="option" data-selectable="" data-value="Kalija Lipscomb">Kalija Lipscomb</div><div class="option" data-selectable="" data-value="Denzel Mims">Denzel Mims</div><div class="option" data-selectable="" data-value="Cornell Powell">Cornell Powell</div><div class="option" data-selectable="" data-value="Eli Stove">Eli Stove</div><div class="option" data-selectable="" data-value="Ramaud Chiaokhiao-Bowman">Ramaud Chiaokhiao-Bowman</div><div class="option" data-selectable="" data-value="Riley Lees">Riley Lees</div><div class="option" data-selectable="" data-value="Ben Skowronek">Ben Skowronek</div><div class="option" data-selectable="" data-value="Josh Imatorbhebhe">Josh Imatorbhebhe</div><div class="option" data-selectable="" data-value="Tyler Vaughns">Tyler Vaughns</div><div class="option" data-selectable="" data-value="Velus Jones Jr.">Velus Jones Jr.</div><div class="option" data-selectable="" data-value="Quintez Cephus">Quintez Cephus</div><div class="option" data-selectable="" data-value="Dez Fitzpatrick">Dez Fitzpatrick</div><div class="option" data-selectable="" data-value="Kelvin Harmon">Kelvin Harmon</div><div class="option" data-selectable="" data-value="Cedrick Wilson">Cedrick Wilson</div><div class="option" data-selectable="" data-value="Michael Gallup">Michael Gallup</div><div class="option" data-selectable="" data-value="Byron Pringle">Byron Pringle</div><div class="option" data-selectable="" data-value="Greg Dortch">Greg Dortch</div><div class="option" data-selectable="" data-value="Jalen Camp">Jalen Camp</div><div class="option" data-selectable="" data-value="Joe Reed">Joe Reed</div><div class="option" data-selectable="" data-value="Dillon Stoner">Dillon Stoner</div><div class="option" data-selectable="" data-value="Bryan Edwards">Bryan Edwards</div><div class="option" data-selectable="" data-value="Dillon Mitchell">Dillon Mitchell</div><div class="option" data-selectable="" data-value="Aaron Fuller">Aaron Fuller</div><div class="option" data-selectable="" data-value="Collin Johnson">Collin Johnson</div><div class="option" data-selectable="" data-value="Devin Duvernay">Devin Duvernay</div><div class="option" data-selectable="" data-value="Lil&#39;Jordan Humphrey">Lil'Jordan Humphrey</div><div class="option" data-selectable="" data-value="Marquez Stevenson">Marquez Stevenson</div><div class="option" data-selectable="" data-value="Austin Mack">Austin Mack</div><div class="option" data-selectable="" data-value="Darnell Mooney">Darnell Mooney</div><div class="option" data-selectable="" data-value="Jaleel Scott">Jaleel Scott</div><div class="option" data-selectable="" data-value="D&#39;Wayne Eskridge">D'Wayne Eskridge</div><div class="option" data-selectable="" data-value="Antoine Wesley">Antoine Wesley</div><div class="option" data-selectable="" data-value="Branden Mack">Branden Mack</div><div class="option" data-selectable="" data-value="Chase Claypool">Chase Claypool</div><div class="option" data-selectable="" data-value="A.J. Brown">A.J. Brown</div><div class="option" data-selectable="" data-value="Tre Nixon">Tre Nixon</div><div class="option" data-selectable="" data-value="D.K. Metcalf">D.K. Metcalf</div><div class="option" data-selectable="" data-value="Damon Hazelton">Damon Hazelton</div><div class="option" data-selectable="" data-value="N&#39;Keal Harry">N'Keal Harry</div><div class="option" data-selectable="" data-value="Antonio Nunn">Antonio Nunn</div><div class="option" data-selectable="" data-value="Anthony Johnson">Anthony Johnson</div><div class="option" data-selectable="" data-value="Quez Watkins">Quez Watkins</div><div class="option" data-selectable="" data-value="Adrian Hardy">Adrian Hardy</div><div class="option" data-selectable="" data-value="Dezmon Patmon">Dezmon Patmon</div><div class="option" data-selectable="" data-value="Damonte Coxie">Damonte Coxie</div><div class="option" data-selectable="" data-value="Kawaan Baker">Kawaan Baker</div><div class="option" data-selectable="" data-value="Blake Proehl">Blake Proehl</div><div class="option" data-selectable="" data-value="Amari Rodgers">Amari Rodgers</div><div class="option" data-selectable="" data-value="Tee Higgins">Tee Higgins</div><div class="option" data-selectable="" data-value="Tamorrion Terry">Tamorrion Terry</div><div class="option" data-selectable="" data-value="KJ Hamler">KJ Hamler</div><div class="option" data-selectable="" data-value="Sage Surratt">Sage Surratt</div><div class="option" data-selectable="" data-value="Ihmir Smith-Marsette">Ihmir Smith-Marsette</div><div class="option" data-selectable="" data-value="Brandon Smith">Brandon Smith</div><div class="option" data-selectable="" data-value="Kadarius Toney">Kadarius Toney</div><div class="option" data-selectable="" data-value="Jeff Thomas">Jeff Thomas</div><div class="option" data-selectable="" data-value="Dazz Newsome">Dazz Newsome</div><div class="option" data-selectable="" data-value="Jonathan Adams Jr.">Jonathan Adams Jr.</div><div class="option" data-selectable="" data-value="Marquise Brown">Marquise Brown</div><div class="option" data-selectable="" data-value="CeeDee Lamb">CeeDee Lamb</div><div class="option" data-selectable="" data-value="Charleston Rambo">Charleston Rambo</div><div class="option" data-selectable="" data-value="Tylan Wallace">Tylan Wallace</div><div class="option" data-selectable="" data-value="Jerry Jeudy">Jerry Jeudy</div><div class="option" data-selectable="" data-value="Henry Ruggs III">Henry Ruggs III</div><div class="option" data-selectable="" data-value="Jalen Reagor">Jalen Reagor</div><div class="option" data-selectable="" data-value="Reggie Roberson Jr.">Reggie Roberson Jr.</div><div class="option" data-selectable="" data-value="Cody White">Cody White</div><div class="option" data-selectable="" data-value="Trevon Grimes">Trevon Grimes</div><div class="option" data-selectable="" data-value="Jonathan Nance">Jonathan Nance</div><div class="option" data-selectable="" data-value="Johnny Johnson III">Johnny Johnson III</div><div class="option" data-selectable="" data-value="Isaiah Hodgins">Isaiah Hodgins</div><div class="option" data-selectable="" data-value="Connor Wedington">Connor Wedington</div><div class="option" data-selectable="" data-value="Laviska Shenault Jr.">Laviska Shenault Jr.</div><div class="option" data-selectable="" data-value="Calvin Austin III">Calvin Austin III</div><div class="option" data-selectable="" data-value="Gabriel Davis">Gabriel Davis</div><div class="option" data-selectable="" data-value="Jaelon Darden">Jaelon Darden</div><div class="option" data-selectable="" data-value="Khalil McClain">Khalil McClain</div><div class="option" data-selectable="" data-value="Jalen Tolbert">Jalen Tolbert</div><div class="option" data-selectable="" data-value="Jalen Wayne">Jalen Wayne</div><div class="option" data-selectable="" data-value="Kyle Williams">Kyle Williams</div><div class="option" data-selectable="" data-value="Warren Jackson">Warren Jackson</div><div class="option" data-selectable="" data-value="Charlie Jones">Charlie Jones</div><div class="option" data-selectable="" data-value="Marlon Williams">Marlon Williams</div><div class="option" data-selectable="" data-value="Nico Collins">Nico Collins</div><div class="option" data-selectable="" data-value="Donovan Peoples-Jones">Donovan Peoples-Jones</div><div class="option" data-selectable="" data-value="Whop Philyor">Whop Philyor</div><div class="option" data-selectable="" data-value="Ty Fryfogle">Ty Fryfogle</div><div class="option" data-selectable="" data-value="Bo Melton">Bo Melton</div><div class="option" data-selectable="" data-value="Matt Landers">Matt Landers</div><div class="option" data-selectable="" data-value="Braylon Sanders">Braylon Sanders</div><div class="option" data-selectable="" data-value="Lynn Bowden Jr.">Lynn Bowden Jr.</div><div class="option" data-selectable="" data-value="Jamarius Way">Jamarius Way</div><div class="option" data-selectable="" data-value="Justin Jefferson">Justin Jefferson</div><div class="option" data-selectable="" data-value="Alec Pierce">Alec Pierce</div><div class="option" data-selectable="" data-value="Slade Bolden">Slade Bolden</div><div class="option" data-selectable="" data-value="Jacob Copeland">Jacob Copeland</div><div class="option" data-selectable="" data-value="Antonio Gibson">Antonio Gibson</div><div class="option" data-selectable="" data-value="Justyn Ross">Justyn Ross</div><div class="option" data-selectable="" data-value="Jake Bobo">Jake Bobo</div><div class="option" data-selectable="" data-value="Brandon Aiyuk">Brandon Aiyuk</div><div class="option" data-selectable="" data-value="Simi Fehoko">Simi Fehoko</div><div class="option" data-selectable="" data-value="Michael Wilson">Michael Wilson</div><div class="option" data-selectable="" data-value="Rashod Bateman">Rashod Bateman</div><div class="option" data-selectable="" data-value="Chris Olave">Chris Olave</div><div class="option" data-selectable="" data-value="Jahan Dotson">Jahan Dotson</div><div class="option" data-selectable="" data-value="Justin Shorter">Justin Shorter</div><div class="option" data-selectable="" data-value="Romeo Doubs">Romeo Doubs</div><div class="option" data-selectable="" data-value="Dyami Brown">Dyami Brown</div><div class="option" data-selectable="" data-value="Josh Johnson">Josh Johnson</div><div class="option" data-selectable="" data-value="Kearis Jackson">Kearis Jackson</div><div class="option" data-selectable="" data-value="A.T. Perry">A.T. Perry</div><div class="option" data-selectable="" data-value="Brennan Eagles">Brennan Eagles</div><div class="option" data-selectable="" data-value="Erik Ezukanma">Erik Ezukanma</div><div class="option" data-selectable="" data-value="Jayden Reed">Jayden Reed</div><div class="option" data-selectable="" data-value="Isaiah McKoy">Isaiah McKoy</div><div class="option" data-selectable="" data-value="Derius Davis">Derius Davis</div><div class="option" data-selectable="" data-value="Ja&#39;Marr Chase">Ja'Marr Chase</div><div class="option" data-selectable="" data-value="Terrace Marshall Jr.">Terrace Marshall Jr.</div><div class="option" data-selectable="" data-value="Jaray Jenkins">Jaray Jenkins</div><div class="option" data-selectable="" data-value="Stephen Guidry">Stephen Guidry</div><div class="option" data-selectable="" data-value="Tyquan Thornton">Tyquan Thornton</div><div class="option" data-selectable="" data-value="Nathaniel Dell">Nathaniel Dell</div><div class="option" data-selectable="" data-value="Michael Jefferson">Michael Jefferson</div><div class="option" data-selectable="" data-value="Kyle Philips">Kyle Philips</div><div class="option" data-selectable="" data-value="Cedric Tillman">Cedric Tillman</div><div class="option" data-selectable="" data-value="Seth Williams">Seth Williams</div><div class="option" data-selectable="" data-value="Anthony Schwartz">Anthony Schwartz</div><div class="option" data-selectable="" data-value="Ronnie Bell">Ronnie Bell</div><div class="option" data-selectable="" data-value="Elijah Moore">Elijah Moore</div><div class="option" data-selectable="" data-value="Rondale Moore">Rondale Moore</div><div class="option" data-selectable="" data-value="Malik Knowles">Malik Knowles</div><div class="option" data-selectable="" data-value="Antoine Green">Antoine Green</div><div class="option" data-selectable="" data-value="Dax Milne">Dax Milne</div><div class="option" data-selectable="" data-value="John Hightower">John Hightower</div><div class="option" data-selectable="" data-value="Khalil Shakir">Khalil Shakir</div><div class="option" data-selectable="" data-value="Devon Williams">Devon Williams</div><div class="option" data-selectable="" data-value="Jalen Nailor">Jalen Nailor</div><div class="option" data-selectable="" data-value="Jadon Haselwood">Jadon Haselwood</div><div class="option" data-selectable="" data-value="Jameson Williams">Jameson Williams</div><div class="option" data-selectable="" data-value="Trey Palmer">Trey Palmer</div><div class="option" data-selectable="" data-value="Joseph Ngata">Joseph Ngata</div><div class="option" data-selectable="" data-value="Cornelius Johnson">Cornelius Johnson</div><div class="option" data-selectable="" data-value="Jonathan Mingo">Jonathan Mingo</div><div class="option" data-selectable="" data-value="Drake London">Drake London</div><div class="option" data-selectable="" data-value="Puka Nacua">Puka Nacua</div><div class="option" data-selectable="" data-value="Elijah Higgins">Elijah Higgins</div><div class="option" data-selectable="" data-value="Luke McCaffrey">Luke McCaffrey</div><div class="option" data-selectable="" data-value="Demario Douglas">Demario Douglas</div><div class="option" data-selectable="" data-value="Jha&#39;Quan Jackson">Jha'Quan Jackson</div><div class="option" data-selectable="" data-value="Ricky Pearsall">Ricky Pearsall</div><div class="option" data-selectable="" data-value="Rashee Rice">Rashee Rice</div><div class="option" data-selectable="" data-value="Tayvion Robinson">Tayvion Robinson</div><div class="option" data-selectable="" data-value="Ainias Smith">Ainias Smith</div><div class="option" data-selectable="" data-value="Jamari Thrash">Jamari Thrash</div><div class="option" data-selectable="" data-value="Tre Tucker">Tre Tucker</div><div class="option" data-selectable="" data-value="Xavier Weaver">Xavier Weaver</div><div class="option" data-selectable="" data-value="Dontayvion Wicks">Dontayvion Wicks</div><div class="option" data-selectable="" data-value="Rakim Jarrett">Rakim Jarrett</div><div class="option" data-selectable="" data-value="Kayshon Boutte">Kayshon Boutte</div><div class="option" data-selectable="" data-value="Quentin Johnston">Quentin Johnston</div><div class="option" data-selectable="" data-value="Jermaine Burton">Jermaine Burton</div><div class="option" data-selectable="" data-value="Lideatrick Griffin">Lideatrick Griffin</div><div class="option" data-selectable="" data-value="Jordan Addison">Jordan Addison</div><div class="option" data-selectable="" data-value="Zay Flowers">Zay Flowers</div><div class="option" data-selectable="" data-value="Anthony Gould">Anthony Gould</div><div class="option" data-selectable="" data-value="Xavier Legette">Xavier Legette</div><div class="option" data-selectable="" data-value="Skyy Moore">Skyy Moore</div><div class="option" data-selectable="" data-value="Makai Polk">Makai Polk</div><div class="option" data-selectable="" data-value="Ja&#39;Lynn Polk">Ja'Lynn Polk</div><div class="option" data-selectable="" data-value="Jalen McMillan">Jalen McMillan</div><div class="option" data-selectable="" data-value="Jaxon Smith-Njigba">Jaxon Smith-Njigba</div><div class="option" data-selectable="" data-value="Troy Franklin">Troy Franklin</div><div class="option" data-selectable="" data-value="Rome Odunze">Rome Odunze</div><div class="option" data-selectable="" data-value="Roman Wilson">Roman Wilson</div><div class="option" data-selectable="" data-value="Parker Washington">Parker Washington</div><div class="option" data-selectable="" data-value="Marvin Harrison Jr.">Marvin Harrison Jr.</div><div class="option" data-selectable="" data-value="Brian Thomas Jr.">Brian Thomas Jr.</div><div class="option" data-selectable="" data-value="Tyler Scott">Tyler Scott</div><div class="option" data-selectable="" data-value="John Metchie">John Metchie</div><div class="option" data-selectable="" data-value="Treylon Burks">Treylon Burks</div><div class="option" data-selectable="" data-value="Dontario Drummond">Dontario Drummond</div><div class="option" data-selectable="" data-value="Tahj Washington">Tahj Washington</div><div class="option" data-selectable="" data-value="Isaiah Williams">Isaiah Williams</div><div class="option" data-selectable="" data-value="Jordan Whittington">Jordan Whittington</div><div class="option" data-selectable="" data-value="Devaughn Vele">Devaughn Vele</div><div class="option" data-selectable="" data-value="Wan&#39;Dale Robinson">Wan'Dale Robinson</div><div class="option" data-selectable="" data-value="Malik Washington">Malik Washington</div><div class="option" data-selectable="" data-value="Garrett Wilson">Garrett Wilson</div><div class="option" data-selectable="" data-value="David Bell">David Bell</div><div class="option" data-selectable="" data-value="Jacob Cowing">Jacob Cowing</div><div class="option" data-selectable="" data-value="Malik Nabers">Malik Nabers</div><div class="option" data-selectable="" data-value="Adonai Mitchell">Adonai Mitchell</div><div class="option" data-selectable="" data-value="Ladd McConkey">Ladd McConkey</div><div class="option" data-selectable="" data-value="Malachi Corley">Malachi Corley</div><div class="option" data-selectable="" data-value="Keon Coleman">Keon Coleman</div><div class="option" data-selectable="" data-value="Xavier Worthy">Xavier Worthy</div><div class="option" data-selectable="" data-value="Johnny Wilson">Johnny Wilson</div><div class="option" data-selectable="" data-value="Xavier Hutchinson">Xavier Hutchinson</div><div class="option" data-selectable="" data-value="Marvin Mims">Marvin Mims</div><div class="option" data-selectable="" data-value="Brenden Rice">Brenden Rice</div><div class="option" data-selectable="" data-value="Josh Downs">Josh Downs</div><div class="option" data-selectable="" data-value="Malik Heath">Malik Heath</div><div class="option" data-selectable="" data-value="Danny Gray">Danny Gray</div><div class="option" data-selectable="" data-value="Jason Brownlee">Jason Brownlee</div><div class="option" data-selectable="" data-value="Mitchell Tinsley">Mitchell Tinsley</div><div class="option" data-selectable="" data-value="Javon Baker">Javon Baker</div><div class="option" data-selectable="" data-value="Jalin Hyatt">Jalin Hyatt</div><div class="option" data-selectable="" data-value="Jalen Brooks">Jalen Brooks</div><div class="option" data-selectable="" data-value="Devontez Walker">Devontez Walker</div><div class="option" data-selectable="" data-value="Rueben Randle">Rueben Randle</div><div class="option" data-selectable="" data-value="Marlon Brown">Marlon Brown</div></div></div></div>
+              <script type="application/json" data-for="selected_player">{"create":true,"maxOptions":1000,"placeholder":"Type to search..."}</script>
+            </div>
+          </div>
+          <div id="player_headshot" class="shiny-html-output shiny-bound-output" aria-live="polite"><div style="text-align: center;">
+  <img src="./_div class=_title-panel__ _div class=_title__The Unicorn__div_ _div class=_subtitle__A Player Comparison Tool__div_ __div__files/qqzht46a66zbi9xyylf4" alt="Player headshot" height="150">
+  <div class="player-info">
+    <p>
+      <span class="bold">Position: </span>
+      WR
+    </p>
+    <p>
+      <span class="bold">College: </span>
+      Georgia Tech
+    </p>
+    <p>
+      <span class="bold">Draft Year: </span>
+      2015
+    </p>
+  </div>
+</div></div>
+        </form>
+      </div>
+      <div class="col-sm-8" role="main">
+        <br>
+        <br>
+        <div class="centered-table">
+          <div id="player_distances" class="shiny-html-output shiny-bound-output" aria-live="polite"><table class="table shiny-table table- spacing-s" style="width:auto;">
+<thead> <tr> <th style="text-align: right;">  </th> <th style="text-align: left;"> Name </th> <th style="text-align: left;"> Similarity </th>  </tr> </thead> <tbody>
+  <tr> <td align="right"> 1 </td> <td> Johnny Wilson </td> <td> <div style="background-color: #0AB66D; color: white; padding: 5px; text-align: center;">0.686</div> </td> </tr>
+  <tr> <td align="right"> 2 </td> <td> Colt Lyerla </td> <td> <div style="background-color: #15B767; color: white; padding: 5px; text-align: center;">0.653</div> </td> </tr>
+  <tr> <td align="right"> 3 </td> <td> Lawrence Cager </td> <td> <div style="background-color: #1CB864; color: white; padding: 5px; text-align: center;">0.641</div> </td> </tr>
+  <tr> <td align="right"> 4 </td> <td> DeAndre Brown </td> <td> <div style="background-color: #1CB864; color: white; padding: 5px; text-align: center;">0.639</div> </td> </tr>
+  <tr> <td align="right"> 5 </td> <td> Coby Fleener </td> <td> <div style="background-color: #26B95E; color: white; padding: 5px; text-align: center;">0.608</div> </td> </tr>
+   </tbody> </table></div>
+        </div>
+      </div>
+    </div>
+    <div class="credit italic">atulv | gridirongridlock | ahvfootball</div>
+    <div class="watermark">
+      <a href="https://www.instagram.com/gridirongridlock/?hl=en" target="_blank">
+        <img src="./_div class=_title-panel__ _div class=_title__The Unicorn__div_ _div class=_subtitle__A Player Comparison Tool__div_ __div__files/Instagram_icon.png">
+      </a>
+      <a href="https://www.linkedin.com/in/atul-venkatesh-8a4b87204/" target="_blank">
+        <img src="./_div class=_title-panel__ _div class=_title__The Unicorn__div_ _div class=_subtitle__A Player Comparison Tool__div_ __div__files/LinkedIn_icon.svg.png">
+      </a>
+      <a href="https://x.com/AhvFootball" target="_blank">
+        <img src="./_div class=_title-panel__ _div class=_title__The Unicorn__div_ _div class=_subtitle__A Player Comparison Tool__div_ __div__files/X_logo.jpg">
+      </a>
+    </div>
+  </div>
+
+
+<div id="ss-connect-dialog" style="display: none;"><label>Attempting to reconnect...</label><label>&nbsp;</label></div><div id="ss-overlay" class="ss-gray-out" style="display: none;"></div><div aria-hidden="true" style="position: absolute; width: 0px; height: 0px; overflow: hidden;"><span style="position: absolute; width: auto; padding: 0px; white-space: pre; letter-spacing: 0px; font-size: 14px; font-family: serif; font-weight: 400; text-transform: none;">Type to search...</span></div><div aria-live="assertive" role="log" aria-relevant="additions" aria-atomic="true" style="position: absolute; width: 1px; height: 1px; margin-top: -1px; clip: rect(1px, 1px, 1px, 1px); overflow: hidden;"><div>All Draft Classes</div></div><div aria-live="assertive" role="log" aria-relevant="additions" aria-atomic="true" style="position: absolute; width: 1px; height: 1px; margin-top: -1px; clip: rect(1px, 1px, 1px, 1px); overflow: hidden;"><div>All Positions</div></div></body><grammarly-desktop-integration data-grammarly-shadow-root="true"><template shadowrootmode="open"><style>
+      div.grammarly-desktop-integration {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select:none;
+        user-select:none;
+      }
+
+      div.grammarly-desktop-integration:before {
+        content: attr(data-content);
+      }
+    </style><div aria-label="grammarly-integration" role="group" tabindex="-1" class="grammarly-desktop-integration" data-content="{&quot;mode&quot;:&quot;full&quot;,&quot;isActive&quot;:true,&quot;isUserDisabled&quot;:false}"></div></template></grammarly-desktop-integration></html>
