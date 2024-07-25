@@ -1,2 +1,2 @@
-# Unicorn_tool
+# The Unicorn
 A player comparison tool
