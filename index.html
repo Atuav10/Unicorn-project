@@ -1,0 +1,3490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NFL Statistics Dashboard</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ===== GLOBAL RESET AND BASIC STYLING ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box; /* Include padding and borders in element width/height */
+    }
+
+    body {
+      font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      /* Dark background for modern look */
+      background: #24212a;
+      color: #ffffff;
+      min-height: 100vh;
+      overflow-x: auto; /* Allow horizontal scrolling for wide tables */
+    }
+
+    .container {
+      max-width: 100%;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* ===== HEADER STYLING ===== */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding: 20px;
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      /* Green gradient text effect */
+      background: linear-gradient(90deg, #A4F80F, #A4F80F);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header-football-image {
+      width: 60px;
+      height: 60px;
+      object-fit: contain;
+      border-radius: 50%;
+      border: 2px solid #A4F80F;
+    }
+
+    .header h1 {
+      font-size: 3rem;
+      font-weight: bold;
+      margin: 0;
+      /* Glowing text shadow effect */
+      /*text-shadow: 0 0 20px rgba(57, 255, 20, 0.5);*/
+    }
+
+    /* ===== FILTERS SECTION ===== */
+    .filters-section {
+      background: #2f343f;
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 30px;
+      backdrop-filter: blur(10px);
+      border: 1px solid #A4F80F; /* Subtle green border */
+      position: relative;
+      z-index: 100;
+    }
+    
+
+    /* Collapsible filter header */
+    .filters-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .filters-header-controls {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .filters-title {
+      color: #ffffff;
+      font-size: 1.5rem;
+      margin-bottom: 0;
+      font-weight: bold;
+    }
+
+    .collapse-icon {
+      color: #A4F80F;
+      font-size: 1.2rem;
+      transition: transform 0.3s ease;
+    }
+
+    .filters-content {
+      margin-top: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .filters-content.collapsed {
+      max-height: 0;
+      overflow: hidden;
+      margin-top: 0;
+    }
+
+    /* Grid layout for filter controls */
+    .filters-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); /* Responsive grid */
+      gap: 20px;
+    }
+
+    /* Individual filter group styling */
+    .filter-group {
+      background: rgba(0, 0, 0, 0.3); /* Darker background */
+      padding: 15px;
+      border-radius: 10px;
+      border: 1px solid rgba(0, 0, 0, 0.3);
+    }
+
+    .filter-label {
+      color: white;
+      font-weight: bold;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    /* Styling for filter subsection titles (General, nflfastR, Zenith) */
+    .filters-subsection-title {
+      color: #ffffff; /* Slightly different green for subsection titles */
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin: 20px 0 15px 0;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #A4F80F; /* Subtle underline */
+      /* text-transform: uppercase; /* Make subsection titles stand out */
+      letter-spacing: 1px; /* Add some spacing between letters */
+    }
+
+    /* First subsection title (General) should have no top margin */
+    .filters-subsection-title:first-of-type {
+      margin-top: 0;
+    }
+
+    /* Styled dropdown selects */
+    .filter-select {
+      width: 100%;
+      background: #151515; /* Dark background */
+      color: #fff;
+      border: 1px solid white;
+      border-radius: 8px;
+      padding: 10px;
+      outline: none; /* Remove default focus outline */
+    }
+
+    /* Custom Multi-select Dropdown Styling */
+    .single-select .multiselect-checkbox {
+      display: none;
+    }
+
+    .custom-multiselect {
+      position: relative;
+      width: 100%;
+    }
+
+    .multiselect-button {
+      width: 100%;
+      max-width: 200px;
+      background: #151515;
+      color: #fff;
+      border: 1px solid #CCCCCC;
+      border-radius: 20px;
+      padding: 10px 16px;
+      outline: none;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      text-align: left;
+      height: 44px;
+      font-size: 0.95rem;
+    }
+
+    .multiselect-button:hover {
+      border-color: #A4F80F;
+    }
+
+    .multiselect-button.open {
+      border-color: #A4F80F;
+    }
+
+    /* Active filter styling - neon green border when filter is selected */
+    .multiselect-button.filter-active {
+      border-color: #A4F80F;
+      border-width: 2px;
+      box-shadow: 0 0 8px #183947;
+    }
+
+    .multiselect-arrow {
+      transition: transform 0.2s ease;
+      color: #A4F80F;
+    }
+
+    .multiselect-button.open .multiselect-arrow {
+      transform: rotate(180deg);
+    }
+
+    .multiselect-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: #151515;
+      border: 1px solid #CCCCCC;
+      border-top: none;
+      border-radius: 0 0 8px 8px;
+      max-height: 200px;
+      overflow-y: auto;
+      z-index: 101;
+      display: none;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    /* Dropdown that opens upward when near bottom */
+    .multiselect-dropdown.dropup {
+      top: auto;
+      bottom: 100%;
+      border-top: 1px solid #A4F80F;
+      border-bottom: none;
+      border-radius: 8px 8px 0 0;
+    }
+
+    .multiselect-dropdown.show {
+      display: block;
+    }
+
+    .multiselect-option {
+      padding: 8px 12px;
+      cursor: pointer;
+      color: #fff;
+      transition: background-color 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .multiselect-option:hover {
+      background: #183947;
+    }
+
+    .multiselect-option.selected {
+      background: #183947;
+      color: #A4F80F;
+    }
+
+    .multiselect-checkbox {
+      width: 14px;
+      height: 14px;
+      border: 1px solid #A4F80F;
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .multiselect-option.selected .multiselect-checkbox {
+      background: #A4F80F;
+      border-color: #A4F80F;
+    }
+
+    .multiselect-option.selected .multiselect-checkbox::after {
+      content: '✓';
+      color: #000;
+      font-size: 10px;
+      font-weight: bold;
+    }
+
+    /* Multi-select styling */
+    .filter-multiselect {
+      width: 100%;
+      background: #151515;
+      color: #fff;
+      border: 1px solid #A4F80F;
+      border-radius: 8px;
+      padding: 10px;
+      outline: none;
+      min-height: 120px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .filter-multiselect option {
+      background: #151515;
+      color: #A4F80F;
+      padding: 5px;
+    }
+
+    .filter-multiselect option:checked {
+      background: #183947;
+      color: #A4F80F;
+    }
+
+    /* ===== TABLE CONTAINER AND STYLING ===== */
+    .table-container {
+      background: #2f343f;
+      border-radius: 15px;
+      overflow: auto; /* Allow both horizontal and vertical scrolling */
+      backdrop-filter: blur(10px);
+      border: 1px solid #A4F80F;
+      max-height: 80vh; /* Limit height to enable vertical scrolling */
+      position: relative;
+    }
+
+    .stats-table {
+      width: 1600px; /* Fixed width to accommodate all columns */
+      border-collapse: collapse; /* Remove spacing between table cells */
+      font-size: 14px;
+    }
+
+    /* Freeze header row */
+    .stats-table thead {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: #2b2732;
+    }
+
+    /* Freeze first two columns (Rank, Team) */
+    .stats-table th:nth-child(1),
+    .stats-table td:nth-child(1) {
+      position: sticky;
+      left: 0;
+      z-index: 5;
+      background: #2b2732;
+    }
+
+    .stats-table th:nth-child(2),
+    .stats-table td:nth-child(2) {
+      position: sticky;
+      left: 60px; /* Width of rank column */
+      z-index: 5;
+      background: #2b2732;
+      border-right: 2px solid #A4F80F; /* Single neon green line after team name */
+      min-width: 150px; /* Ensure enough space for logo + team name */
+    }
+
+/* Header cells in frozen columns need higher z-index */
+    .stats-table th:nth-child(1),
+    .stats-table th:nth-child(2) {
+     z-index: 15;
+    }
+    /* Table header styling */
+    .stats-table th {
+      background: #2b2732; /* Dark gradient */
+      color: #A4F80F;
+      padding: 15px 15px;
+      text-align: center; /* Center all header text */
+      font-weight: bold;
+      border-bottom: 2px solid #A4F80F; /* Green bottom border */
+      white-space: nowrap; /* Prevent text wrapping */
+      position: relative;
+      cursor: pointer; /* Indicate clickable for sorting */
+      user-select: none; /* Prevent text selection on click */
+    }
+
+    /* Sort indicator styling */
+    .stats-table th .sort-indicator {
+      margin-left: 6px;
+      color: #A4F80F; /* Lighter green */
+      font-size: 12px;
+    }
+
+    /* Table data cell styling */
+    .stats-table td {
+      padding: 12px 10px;
+      border-bottom: 1px solid rgba(164, 248, 15, 0.6); /* Subtle row dividers */
+      white-space: nowrap; /* Prevent text wrapping */
+      text-align: center; /* Center all table data */
+    }
+    .stats-table td:nth-child(2) {
+      text-align: left;
+    }
+    /* Row hover effect */
+    .stats-table tr:hover {
+      background: #183947; /* Subtle green highlight */
+    }
+
+    /* Team logo styling */
+    .team-logo {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      object-fit: contain;
+      border: 1px solid #A4F80F;
+      display: inline-block;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    /* ===== STATS KEY STYLING ===== */
+    /* This container is now hidden by default as it's replaced by the dropdown */
+    .stats-key-container {
+      display: none; 
+    }
+
+    /* ===== STATUS MESSAGES ===== */
+    .loading {
+      text-align: center;
+      color: #A4F80F;
+      font-size: 18px;
+      margin: 20px 0;
+    }
+
+    .error {
+      color: #ff4444; /* Red for errors */
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .no-data {
+      text-align: center;
+      color: #888; /* Gray for empty state */
+      font-style: italic;
+      padding: 40px;
+    }
+
+    /* Helper text styling */
+    .help-text {
+      color: #888;
+      font-style: italic;
+      margin-top: 10px;
+    }
+
+    /* ===== LOGIN SCREEN STYLING ===== */
+    .login-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #0a0a0a 0%, #24212a 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .login-container {
+      background: #2f343f;
+      border-radius: 20px;
+      padding: 40px;
+      backdrop-filter: blur(10px);
+      border: 1px solid #A4F80F;
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+    }
+
+    .login-header h1 {
+      background: linear-gradient(90deg, #A4F80F, #A4F80F);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    .login-header p {
+      color: #A4F80F;
+      font-size: 1.1rem;
+      margin-bottom: 30px;
+    }
+
+    .login-form input {
+      width: 100%;
+      padding: 15px;
+      margin-bottom: 20px;
+      background: #151515;
+      color: #fff;
+      border: 1px solid #A4F80F;
+      border-radius: 8px;
+      font-size: 16px;
+      outline: none;
+    }
+
+    .login-form input:focus {
+      border-color: #A4F80F;
+      box-shadow: 0 0 10px #A4F80F;
+    }
+
+    .login-form button {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(45deg, #A4F80F, #A4F80F);
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .login-form button:hover {
+      transform: translateY(-2px);
+    }
+
+    .login-error {
+      color: #ff4444;
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
+    .logout-btn {
+      background: linear-gradient(45deg, #ff4444, #ff6666);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(255, 68, 68, 0.3);
+    }
+
+    .logout-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255, 68, 68, 0.4);
+    }
+
+    .reset-filters-btn {
+      background: linear-gradient(45deg, #A4F80F, #A4F80F);
+      color: #000;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: bold;
+      transition: all 0.2s ease;
+    }
+
+    .reset-filters-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 3px 8px #A4F80F;
+    }
+
+    .download-csv-btn {
+      background: rgba(0, 0, 0, 0.3);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: bold;
+      transition: all 0.2s ease;
+      border-color:#A4F80F;
+    }
+
+    .download-csv-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 3px 8px rgba(0, 123, 255, 0.4);
+    }
+
+    /* ===== TAB STYLING (ESPN Style) ===== */
+    .tab-container {
+      background: transparent;
+      padding: 0;
+      border: none;
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Top level category tabs (Offense/Defense) with key button */
+    .category-tabs {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #444;
+      padding-bottom: 10px;
+    }
+
+    .category-tabs-left {
+      display: flex;
+      gap: 40px;
+    }
+
+    .category-tab {
+      background: none;
+      border: none;
+      color: #999;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      padding: 8px 0;
+      position: relative;
+      transition: color 0.3s ease;
+    }
+
+    .category-tab:hover {
+      color: #fff;
+    }
+
+    .category-tab.active {
+      color: #fff;
+    }
+
+    .category-tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: #A4F80F;
+      border-radius: 2px;
+    }
+
+    /* Sub tabs container and buttons row */
+    .sub-tabs-row {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+    }
+
+    /* Connected pill container for sub-tabs */
+    .sub-tabs-container {
+      display: inline-flex;
+      background: #2f343f;
+      border: 1px solid #ffffff;
+      border-radius: 25px;
+      padding: 4px;
+      gap: 0;
+      margin-right: 15px;
+    }
+
+    /* Pill-style filter dropdowns (for team and week) */
+    .pill-filter {
+      position: relative;
+      margin-right: 8px;
+    }
+
+    .pill-filter:last-child {
+      margin-right: 0;
+    }
+
+    .pill-filter .multiselect-button {
+      background: #2f343f;
+      border: 1px solid #ffffff;
+      border-radius: 20px;
+      padding: 8px 16px;
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 500;
+      min-width: auto;
+      display: flex;
+      align-items: center;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .pill-filter .multiselect-button:hover {
+      border-color: #ffffff;
+    }
+
+    .pill-filter .multiselect-arrow {
+      color: #A4F80F;
+      margin-left: 4px;
+      font-size: 12px;
+    }
+
+    .pill-filter .multiselect-text {
+      white-space: nowrap;
+      color: #ffffff;
+    }
+
+    /* Active filter styling for pill filters - green border with glow */
+    .pill-filter .multiselect-button.filter-active {
+      border-color: #A4F80F;
+      border-width: 2px;
+      box-shadow: 0 0 8px #183947;
+      padding: 7px 15px;
+    }
+
+    .pill-filter .multiselect-button.filter-active .multiselect-text {
+      color: #ffffff;
+    }
+
+    .pill-filter .multiselect-button.filter-active .multiselect-arrow {
+      color: #A4F80F;
+    }
+
+    .pill-filter .multiselect-dropdown {
+      right: auto;
+      min-width: 200px;
+      width: max-content;
+    }
+
+    .sub-tab {
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 8px 20px;
+      border-radius: 20px;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .sub-tab:hover {
+      color: #A4F80F;
+    }
+
+    .sub-tab.active {
+      background: #151515;
+      color: #A4F80F;
+      font-weight: bold;
+    }
+
+    /* ===== NEW: KEY BUTTON AND DROPDOWN STYLES ===== */
+    .key-dropdown-container {
+      position: relative; /* Needed for positioning the dropdown */
+    }
+
+    .key-button {
+      background: rgba(255, 255, 255, 0.1);
+      color: #A4F80F;
+      border: 1px solid #A4F80F;
+      border-radius: 8px;
+      padding: 12px 24px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      outline: none;
+    }
+    .key-button:hover {
+      background: #A4F80F;
+      color: #000;
+    }
+
+    .key-dropdown-content {
+      display: none; /* Hidden by default */
+      position: absolute;
+      top: 100%; /* Position below the button */
+      right: 0; /* Align to the right edge of the container */
+      width: 700px; /* Adjust width as needed */
+      background: #1a1a1a;
+      border: 1px solid #A4F80F;
+      border-radius: 15px;
+      padding: 25px;
+      z-index: 102; /* Ensure it's above other content */
+      box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+    }
+
+    .key-dropdown-content.show {
+      display: block; /* Show when active */
+    }
+
+    .key-dropdown-content h3 {
+      color: #A4F80F;
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      font-weight: bold;
+      border-bottom: 1px solid #A4F80F;
+      padding-bottom: 10px;
+    }
+
+    .stats-key-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive grid for key items */
+      gap: 15px;
+    }
+
+    .key-item {
+      font-size: 11px;
+      color: #ccc;
+    }
+
+    .key-item strong {
+      color: #A4F80F;
+      font-weight: bold;
+      margin-right: 8px;
+    }
+
+    /* Hide pass/rush specific filters by default */
+    .pass-only-filter,
+    .rush-only-filter {
+      display: none;
+    }
+
+    /* Show pass filters when pass tab is active */
+    .show-pass-filters .pass-only-filter {
+      display: block;
+    }
+
+    /* Show rush filters when rush tab is active */
+    .show-rush-filters .rush-only-filter {
+      display: block;
+    }
+
+
+
+    /* ===== RESPONSIVE DESIGN ===== */
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        gap: 15px;
+      }
+      .header-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+      }
+      .header-football-image {
+        width: 80px;
+        height: 80px;
+        object-fit: contain;
+        border-radius: 50%;
+        border: none;
+      }
+      .header h1 {
+        font-size: 2rem; /* Smaller header on mobile */
+      }
+      .filters-grid {
+        grid-template-columns: 1fr; /* Single column on mobile */
+      }
+      .stats-table {
+        font-size: 12px; /* Smaller text on mobile */
+        width: 1400px; /* Slightly narrower table */
+      }
+      .stats-table th, .stats-table td {
+        padding: 8px 6px; /* Less padding on mobile */
+      }
+      .login-container {
+        padding: 30px 20px;
+      }
+      .login-header h1 {
+        font-size: 2rem;
+      }
+      /* NEW: Responsive key dropdown */
+      .key-dropdown-content {
+        width: 90vw; /* Make dropdown wider on mobile */
+      }
+      .stats-key-grid {
+        grid-template-columns: 1fr; /* Single column key on mobile */
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="loginScreen" class="login-screen">
+    <div class="login-container">
+      <div class="login-header">
+        <h1>The 33rd Team Research Tool</h1>
+        <p>Enter password to access the dashboard</p>
+      </div>
+      <div class="login-form">
+        <input type="password" id="passwordInput" placeholder="Enter password" />
+        <button id="loginButton" onclick="checkPassword()">Access Dashboard</button>
+        <div id="loginError" class="login-error"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container" id="mainContent" style="display: none;">
+    <div class="header">
+      <div class="header-content">
+        <img src="football_image.png" alt="Football" class="header-football-image" />
+        <h1>The 33rd Team Research Tool</h1>
+      </div>
+      <button id="logoutButton" class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <div class="tab-container" id="tabContainer" style="display: none;">
+      <!-- Top level category tabs with key button -->
+      <div class="category-tabs">
+        <div class="category-tabs-left">
+          <button class="category-tab active" id="offenseCategory" onclick="switchCategory('offense')">Offense</button>
+          <button class="category-tab" id="defenseCategory" onclick="switchCategory('defense')">Defense</button>
+        </div>
+        <div class="key-dropdown-container">
+        <button id="keyButton" class="key-button" onclick="toggleKeyDropdown(event)">Key</button>
+        <div id="keyDropdown" class="key-dropdown-content">
+          <h3>Key</h3>
+          <div class="stats-key-grid">
+            <div class="key-item"><strong>ATT:</strong> Attempts (Pass or Rush)</div>
+            <div class="key-item"><strong>AY/A:</strong> Air Yards Per Attempt</div>
+            <div class="key-item"><strong>CMP:</strong> Completions</div>
+            <div class="key-item"><strong>CMP%:</strong> Completion Percentage</div>
+            <div class="key-item"><strong>CPOE:</strong> Completion Percentage Over Expected</div>
+            <div class="key-item"><strong>EPA/ATT:</strong> Expected Points Added Per Attempt (Pass or Rush)</div>
+            <div class="key-item"><strong>EPA/Play:</strong> Expected Points Added Per Play</div>
+            <div class="key-item"><strong>Explosive:</strong> Explosive Plays (20+ Yard Pass, 10+ Yard Rush)</div>
+            <div class="key-item"><strong>Explosive%:</strong> Explosive Play Rate</div>
+            <div class="key-item"><strong>1D:</strong> First Downs</div>
+            <div class="key-item"><strong>1D%:</strong> First Down Rate</div>
+            <div class="key-item"><strong>INT:</strong> Interceptions</div>
+            <div class="key-item"><strong>Plays:</strong> Total Plays</div>
+            <div class="key-item"><strong>PTS:</strong> Points (Scored or Allowed)</div>
+            <div class="key-item"><strong>RTG:</strong> Passer Rating</div>
+            <div class="key-item"><strong>Sk:</strong> Sacks </div>
+            <div class="key-item"><strong>Success:</strong> Successful Plays (Positive EPA Plays)</div>
+            <div class="key-item"><strong>Success%:</strong> Success Rate</div>
+            <div class="key-item"><strong>TD:</strong> Touchdowns</div>
+            <div class="key-item"><strong>Total EPA:</strong> Total Expected Points Added</div>
+            <div class="key-item"><strong>YD:</strong> Yards</div>
+            <div class="key-item"><strong>YPA:</strong> Yards Per Pass Attempt</div>
+            <div class="key-item"><strong>YPC:</strong> Yards Per Carry</div>
+            <div class="key-item"><strong>YPP:</strong> Yards Per Play</div>
+          </div>
+        </div>
+      </div>
+      </div>
+
+      <!-- Sub tabs row -->
+      <div class="sub-tabs-row">
+        <!-- Offense sub-tabs (visible by default) -->
+        <div class="sub-tabs-container" id="offenseSubTabs">
+          <button class="sub-tab active" id="teamOTab" onclick="switchTab('TEAM_O')">Team Total</button>
+          <button class="sub-tab" id="passTab" onclick="switchTab('PASS')">Passing</button>
+          <button class="sub-tab" id="rushTab" onclick="switchTab('RUSH')">Rushing</button>
+        </div>
+
+        <!-- Defense sub-tabs (hidden by default) -->
+        <div class="sub-tabs-container" id="defenseSubTabs" style="display: none;">
+          <button class="sub-tab active" id="teamDTab" onclick="switchTab('TEAM_D')">Team Total</button>
+          <button class="sub-tab" id="passDefTab" onclick="switchTab('PASS_DEF')">Passing</button>
+          <button class="sub-tab" id="rushDefTab" onclick="switchTab('RUSH_DEF')">Rushing</button>
+        </div>
+
+        <!-- Week filter pill -->
+        <div class="custom-multiselect pill-filter" data-select="weekSelect">
+          <button type="button" class="multiselect-button">
+            <span class="multiselect-text">All Weeks</span>
+            <span class="multiselect-arrow">▼</span>
+          </button>
+          <div class="multiselect-dropdown">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="filters-section" id="filtersSection" style="display: none;">
+      <div class="filters-header" onclick="toggleFilters()">
+        <h3 class="filters-title">Filters</h3>
+        <div class="filters-header-controls">
+          <button id="downloadCsvBtn" class="download-csv-btn" onclick="downloadTableAsCSV(event)">Download CSV</button>
+          <button id="resetFiltersBtn" class="reset-filters-btn" onclick="resetAllFilters(event)">Reset All Filters</button>
+          <span class="collapse-icon" id="collapseIcon">▶</span>
+        </div>
+      </div>
+
+      <div class="filters-content collapsed" id="filtersContent">
+        <h4 class="filters-subsection-title">General Filters</h4>
+        <div class="filters-grid">
+          <div class="filter-group">
+            <label class="filter-label" for="teamSelect">Team</label>
+            <div class="custom-multiselect" data-select="teamSelect">
+              <button type="button" class="multiselect-button">
+                <span class="multiselect-text">All Teams</span>
+                <span class="multiselect-arrow">▼</span>
+              </button>
+              <div class="multiselect-dropdown">
+              </div>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label" for="downSelect">Down</label>
+            <div class="custom-multiselect" data-select="downSelect">
+              <button type="button" class="multiselect-button">
+                <span class="multiselect-text">All Downs</span>
+                <span class="multiselect-arrow">▼</span>
+              </button>
+              <div class="multiselect-dropdown">
+                <div class="multiselect-option" data-value="ALL">
+                  <span class="multiselect-checkbox"></span>
+                  <span>All Downs</span>
+                </div>
+                <div class="multiselect-option" data-value="1">
+                  <span class="multiselect-checkbox"></span>
+                  <span>1st</span>
+                </div>
+                <div class="multiselect-option" data-value="2">
+                  <span class="multiselect-checkbox"></span>
+                  <span>2nd</span>
+                </div>
+                <div class="multiselect-option" data-value="3">
+                  <span class="multiselect-checkbox"></span>
+                  <span>3rd</span>
+                </div>
+                <div class="multiselect-option" data-value="4">
+                  <span class="multiselect-checkbox"></span>
+                  <span>4th</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label" for="distanceSelect">Distance</label>
+            <div class="custom-multiselect" data-select="distanceSelect">
+              <button type="button" class="multiselect-button">
+                <span class="multiselect-text">All Distances</span>
+                <span class="multiselect-arrow">▼</span>
+              </button>
+              <div class="multiselect-dropdown">
+                <div class="multiselect-option" data-value="ALL">
+                  <span class="multiselect-checkbox"></span>
+                  <span>All Distances</span>
+                </div>
+                <div class="multiselect-option" data-value="short">
+                  <span class="multiselect-checkbox"></span>
+                  <span>Short (1-3)</span>
+                </div>
+                <div class="multiselect-option" data-value="medium">
+                  <span class="multiselect-checkbox"></span>
+                  <span>Medium (4-7)</span>
+                </div>
+                <div class="multiselect-option" data-value="long">
+                  <span class="multiselect-checkbox"></span>
+                  <span>Long (8+)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label" for="halfSelect">Half</label>
+            <div class="custom-multiselect" data-select="halfSelect">
+              <button type="button" class="multiselect-button">
+                <span class="multiselect-text">All Halves</span>
+                <span class="multiselect-arrow">▼</span>
+              </button>
+              <div class="multiselect-dropdown">
+                <div class="multiselect-option" data-value="ALL">
+                  <span class="multiselect-checkbox"></span>
+                  <span>All Halves</span>
+                </div>
+                <div class="multiselect-option" data-value="Half1">
+                  <span class="multiselect-checkbox"></span>
+                  <span>1H</span>
+                </div>
+                <div class="multiselect-option" data-value="Half2">
+                  <span class="multiselect-checkbox"></span>
+                  <span>2H</span>
+                </div>
+                <div class="multiselect-option" data-value="Overtime">
+                  <span class="multiselect-checkbox"></span>
+                  <span>OT</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label" for="settingSelect">Setting</label>
+            <div class="custom-multiselect" data-select="settingSelect">
+              <button type="button" class="multiselect-button">
+                <span class="multiselect-text">Home and Away</span>
+                <span class="multiselect-arrow">▼</span>
+              </button>
+              <div class="multiselect-dropdown">
+                <div class="multiselect-option" data-value="ALL">
+                  <span class="multiselect-checkbox"></span>
+                  <span>Home and Away</span>
+                </div>
+                <div class="multiselect-option" data-value="home">
+                  <span class="multiselect-checkbox"></span>
+                  <span>Home</span>
+                </div>
+                <div class="multiselect-option" data-value="away">
+                  <span class="multiselect-checkbox"></span>
+                  <span>Away</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h4 class="filters-subsection-title">nflfastR Filters</h4>
+        <div class="filters-grid">
+            <div class="filter-group">
+                <label class="filter-label" for="scrambleSelect">Scramble</label>
+                <div class="custom-multiselect single-select" data-select="scrambleSelect">
+                    <button type="button" class="multiselect-button">
+                    <span class="multiselect-text">All Plays</span>
+                    <span class="multiselect-arrow">▼</span>
+                    </button>
+                    <div class="multiselect-dropdown">
+                    <div class="multiselect-option" data-value="ALL">
+                        <span class="multiselect-checkbox"></span>
+                        <span>All Plays</span>
+                    </div>
+                    <div class="multiselect-option" data-value="1">
+                        <span class="multiselect-checkbox"></span>
+                        <span>Scrambles Only</span>
+                    </div>
+                    <div class="multiselect-option" data-value="0">
+                        <span class="multiselect-checkbox"></span>
+                        <span>Non-Scrambles</span>
+                    </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-group pass-only-filter">
+                <label class="filter-label" for="passLocationSelect">Pass Location</label>
+                <div class="custom-multiselect" data-select="passLocationSelect">
+                    <button type="button" class="multiselect-button">
+                    <span class="multiselect-text">All Locations</span>
+                    <span class="multiselect-arrow">▼</span>
+                    </button>
+                    <div class="multiselect-dropdown">
+                    <div class="multiselect-option" data-value="ALL">
+                        <span class="multiselect-checkbox"></span>
+                        <span>All Locations</span>
+                    </div>
+                    <div class="multiselect-option" data-value="left">
+                        <span class="multiselect-checkbox"></span>
+                        <span>Left</span>
+                    </div>
+                    <div class="multiselect-option" data-value="middle">
+                        <span class="multiselect-checkbox"></span>
+                        <span>Middle</span>
+                    </div>
+                    <div class="multiselect-option" data-value="right">
+                        <span class="multiselect-checkbox"></span>
+                        <span>Right</span>
+                    </div>
+                    </div>
+                </div>
+            </div>
+            <div class="filter-group rush-only-filter">
+                <label class="filter-label" for="runLocationSelect">Run Location</label>
+                <div class="custom-multiselect" data-select="runLocationSelect">
+                    <button type="button" class="multiselect-button">
+                    <span class="multiselect-text">All Locations</span>
+                    <span class="multiselect-arrow">▼</span>
+                    </button>
+                    <div class="multiselect-dropdown">
+                    <div class="multiselect-option" data-value="ALL">
+                        <span class="multiselect-checkbox"></span>
+                        <span>All Locations</span>
+                    </div>
+                    <div class="multiselect-option" data-value="left">
+                        <span class="multiselect-checkbox"></span>
+                        <span>Left</span>
+                    </div>
+                    <div class="multiselect-option" data-value="middle">
+                        <span class="multiselect-checkbox"></span>
+                        <span>Middle</span>
+                    </div>
+                    <div class="multiselect-option" data-value="right">
+                        <span class="multiselect-checkbox"></span>
+                        <span>Right</span>
+                    </div>
+                    </div>
+                </div>
+            </div>
+            <div class="filter-group rush-only-filter">
+                <label class="filter-label" for="runGapSelect">Run Gap</label>
+                <div class="custom-multiselect" data-select="runGapSelect">
+                    <button type="button" class="multiselect-button">
+                    <span class="multiselect-text">All Gaps</span>
+                    <span class="multiselect-arrow">▼</span>
+                    </button>
+                    <div class="multiselect-dropdown">
+                    <div class="multiselect-option" data-value="ALL">
+                        <span class="multiselect-checkbox"></span>
+                        <span>All Gaps</span>
+                    </div>
+                    <div class="multiselect-option" data-value="guard">
+                        <span class="multiselect-checkbox"></span>
+                        <span>Guard</span>
+                    </div>
+                    <div class="multiselect-option" data-value="tackle">
+                        <span class="multiselect-checkbox"></span>
+                        <span>Tackle</span>
+                    </div>
+                    <div class="multiselect-option" data-value="end">
+                        <span class="multiselect-checkbox"></span>
+                        <span>End</span>
+                    </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label" for="roofSelect">Roof</label>
+                <div class="custom-multiselect single-select" data-select="roofSelect">
+                    <button type="button" class="multiselect-button">
+                        <span class="multiselect-text">All Roof Types</span>
+                        <span class="multiselect-arrow">▼</span>
+                    </button>
+                    <div class="multiselect-dropdown">
+                        <div class="multiselect-option" data-value="ALL"><span>All Roof Types</span></div>
+                        <div class="multiselect-option" data-value="Indoor"><span>Indoor</span></div>
+                        <div class="multiselect-option" data-value="Outdoor"><span>Outdoor</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label" for="surfaceSelect">Surface</label>
+                <div class="custom-multiselect single-select" data-select="surfaceSelect">
+                    <button type="button" class="multiselect-button">
+                        <span class="multiselect-text">All Surfaces</span>
+                        <span class="multiselect-arrow">▼</span>
+                    </button>
+                    <div class="multiselect-dropdown">
+                        <div class="multiselect-option" data-value="ALL"><span>All Surfaces</span></div>
+                        <div class="multiselect-option" data-value="Grass"><span>Grass</span></div>
+                        <div class="multiselect-option" data-value="Turf"><span>Turf</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label" for="fieldZoneSelect">Field Zone</label>
+                <div class="custom-multiselect" data-select="fieldZoneSelect">
+                    <button type="button" class="multiselect-button">
+                        <span class="multiselect-text">All Field Zones</span>
+                        <span class="multiselect-arrow">▼</span>
+                    </button>
+                    <div class="multiselect-dropdown">
+                        </div>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label" for="timeRemainingSelect">Time Remaining</label>
+                 <div class="custom-multiselect" data-select="timeRemainingSelect">
+                    <button type="button" class="multiselect-button">
+                        <span class="multiselect-text">All Plays</span>
+                        <span class="multiselect-arrow">▼</span>
+                    </button>
+                    <div class="multiselect-dropdown">
+                        <div class="multiselect-option" data-value="ALL"><span class="multiselect-checkbox"></span><span>All Plays</span></div>
+                        <div class="multiselect-option" data-value="2MIN"><span class="multiselect-checkbox"></span><span>2-Minutes</span></div>
+                        <div class="multiselect-option" data-value="4MIN"><span class="multiselect-checkbox"></span><span>4-Minutes</span></div>
+                        <div class="multiselect-option" data-value="NORMAL"><span class="multiselect-checkbox"></span><span>Normal</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h4 class="filters-subsection-title">Zenith Filters</h4>
+        <div class="filters-grid">
+          <div class="filter-group">
+            <label class="filter-label" for="noHuddleSelect">Huddle Type</label>
+            <div class="custom-multiselect single-select" data-select="noHuddleSelect">
+                <button type="button" class="multiselect-button">
+                    <span class="multiselect-text">All Huddle Types</span>
+                    <span class="multiselect-arrow">▼</span>
+                </button>
+                <div class="multiselect-dropdown">
+                    <div class="multiselect-option" data-value="ALL"><span>All Huddle Types</span></div>
+                    <div class="multiselect-option" data-value="true"><span>No Huddle</span></div>
+                    <div class="multiselect-option" data-value="false"><span>Huddle</span></div>
+                </div>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label" for="qbAlignmentSelect">QB Alignment</label>
+            <div class="custom-multiselect" data-select="qbAlignmentSelect">
+              <button type="button" class="multiselect-button">
+                <span class="multiselect-text">All Alignments</span>
+                <span class="multiselect-arrow">▼</span>
+              </button>
+              <div class="multiselect-dropdown">
+                <div class="multiselect-option" data-value="ALL">
+                  <span class="multiselect-checkbox"></span>
+                  <span>All Alignments</span>
+                </div>
+                <div class="multiselect-option" data-value="under center">
+                  <span class="multiselect-checkbox"></span>
+                  <span>Under Center</span>
+                </div>
+                <div class="multiselect-option" data-value="shotgun">
+                  <span class="multiselect-checkbox"></span>
+                  <span>Shotgun</span>
+                </div>
+                <div class="multiselect-option" data-value="pistol">
+                  <span class="multiselect-checkbox"></span>
+                  <span>Pistol</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label" for="backfieldSetSelect">Backfield Set</label>
+            <div class="custom-multiselect" data-select="backfieldSetSelect">
+              <button type="button" class="multiselect-button">
+                <span class="multiselect-text">All Backfield Sets</span>
+                <span class="multiselect-arrow">▼</span>
+              </button>
+              <div class="multiselect-dropdown">
+                </div>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label" for="familySelect">Off. Formation Family</label>
+            <div class="custom-multiselect" data-select="familySelect">
+              <button type="button" class="multiselect-button">
+                <span class="multiselect-text">All Families</span>
+                <span class="multiselect-arrow">▼</span>
+              </button>
+              <div class="multiselect-dropdown">
+                </div>
+            </div>
+          </div>
+
+<div class="filter-group">
+  <label class="filter-label" for="defensiveFrontSelect">Def. Front Family</label>
+  <div class="custom-multiselect" data-select="defensiveFrontSelect">
+    <button type="button" class="multiselect-button">
+      <span class="multiselect-text">All Fronts</span>
+      <span class="multiselect-arrow">▼</span>
+    </button>
+    <div class="multiselect-dropdown">
+      </div>
+  </div>
+</div>
+
+<div class="filter-group">
+  <label class="filter-label" for="personnelSelect">Personnel</label>
+  <div class="custom-multiselect" data-select="personnelSelect">
+    <button type="button" class="multiselect-button">
+      <span class="multiselect-text">All Personnel</span>
+      <span class="multiselect-arrow">▼</span>
+    </button>
+    <div class="multiselect-dropdown">
+      <div class="multiselect-option" data-value="ALL">
+        <span class="multiselect-checkbox"></span>
+        <span>All Personnel</span>
+      </div>
+      <div class="multiselect-option" data-value="10 personnel">
+        <span class="multiselect-checkbox"></span>
+        <span>10 Personnel</span>
+      </div>
+      <div class="multiselect-option" data-value="11 personnel">
+        <span class="multiselect-checkbox"></span>
+        <span>11 Personnel</span>
+      </div>
+      <div class="multiselect-option" data-value="12 personnel">
+        <span class="multiselect-checkbox"></span>
+        <span>12 Personnel</span>
+      </div>
+      <div class="multiselect-option" data-value="13 personnel">
+        <span class="multiselect-checkbox"></span>
+        <span>13 Personnel</span>
+      </div>
+      <div class="multiselect-option" data-value="14 personnel">
+        <span class="multiselect-checkbox"></span>
+        <span>14 Personnel</span>
+      </div>
+      <div class="multiselect-option" data-value="20 personnel">
+        <span class="multiselect-checkbox"></span>
+        <span>20 Personnel</span>
+      </div>
+      <div class="multiselect-option" data-value="21 personnel">
+        <span class="multiselect-checkbox"></span>
+        <span>21 Personnel</span>
+      </div>
+      <div class="multiselect-option" data-value="22 personnel">
+        <span class="multiselect-checkbox"></span>
+        <span>22 Personnel</span>
+      </div>
+      <div class="multiselect-option" data-value="23 personnel">
+        <span class="multiselect-checkbox"></span>
+        <span>23 Personnel</span>
+      </div>
+      <div class="multiselect-option" data-value="31 personnel">
+        <span class="multiselect-checkbox"></span>
+        <span>31 Personnel</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="filter-group">
+  <label class="filter-label" for="defensivePackageSelect">Defensive Package</label>
+  <div class="custom-multiselect" data-select="defensivePackageSelect">
+    <button type="button" class="multiselect-button">
+      <span class="multiselect-text">All Packages</span>
+      <span class="multiselect-arrow">▼</span>
+    </button>
+    <div class="multiselect-dropdown">
+      <div class="multiselect-option" data-value="ALL">
+        <span class="multiselect-checkbox"></span>
+        <span>All Packages</span>
+      </div>
+      <div class="multiselect-option" data-value="Base">
+        <span class="multiselect-checkbox"></span>
+        <span>Base</span>
+      </div>
+      <div class="multiselect-option" data-value="Dime">
+        <span class="multiselect-checkbox"></span>
+        <span>Dime</span>
+      </div>
+      <div class="multiselect-option" data-value="Goal Line">
+        <span class="multiselect-checkbox"></span>
+        <span>Goal Line</span>
+      </div>
+      <div class="multiselect-option" data-value="Nickel">
+        <span class="multiselect-checkbox"></span>
+        <span>Nickel</span>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="filter-group">
+  <label class="filter-label" for="motionSelect">Motion Type</label>
+  <div class="custom-multiselect" data-select="motionSelect">
+    <button type="button" class="multiselect-button">
+      <span class="multiselect-text">All Plays</span>
+      <span class="multiselect-arrow">▼</span>
+    </button>
+    <div class="multiselect-dropdown">
+      <div class="multiselect-option" data-value="ALL">
+        <span class="multiselect-checkbox"></span>
+        <span>All Plays</span>
+      </div>
+      <div class="multiselect-option" data-value="Ac">
+        <span class="multiselect-checkbox"></span>
+        <span>Ac</span>
+      </div>
+      <div class="multiselect-option" data-value="Ghost">
+        <span class="multiselect-checkbox"></span>
+        <span>Ghost</span>
+      </div>
+      <div class="multiselect-option" data-value="In">
+        <span class="multiselect-checkbox"></span>
+        <span>In</span>
+      </div>
+      <div class="multiselect-option" data-value="Jet">
+        <span class="multiselect-checkbox"></span>
+        <span>Jet</span>
+      </div>
+      <div class="multiselect-option" data-value="Jump">
+        <span class="multiselect-checkbox"></span>
+        <span>Jump</span>
+      </div>
+      <div class="multiselect-option" data-value="Long">
+        <span class="multiselect-checkbox"></span>
+        <span>Long</span>
+      </div>
+      <div class="multiselect-option" data-value="Out">
+        <span class="multiselect-checkbox"></span>
+        <span>Out</span>
+      </div>
+      <div class="multiselect-option" data-value="Short">
+        <span class="multiselect-checkbox"></span>
+        <span>Short</span>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="filter-group">
+  <label class="filter-label" for="numMotionsSelect">Number of Motions</label>
+  <div class="custom-multiselect" data-select="numMotionsSelect">
+    <button type="button" class="multiselect-button">
+      <span class="multiselect-text">All Motions</span>
+      <span class="multiselect-arrow">▼</span>
+    </button>
+    <div class="multiselect-dropdown">
+      <div class="multiselect-option" data-value="ALL">
+        <span class="multiselect-checkbox"></span>
+        <span>All Motions</span>
+      </div>
+      <div class="multiselect-option" data-value="0">
+        <span class="multiselect-checkbox"></span>
+        <span>0</span>
+      </div>
+      <div class="multiselect-option" data-value="1">
+        <span class="multiselect-checkbox"></span>
+        <span>1</span>
+      </div>
+      <div class="multiselect-option" data-value="2">
+        <span class="multiselect-checkbox"></span>
+        <span>2</span>
+      </div>
+      <div class="multiselect-option" data-value="3+">
+        <span class="multiselect-checkbox"></span>
+        <span>3+</span>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+    <div class="table-container" id="tableContainer" style="display: none;">
+      <table class="stats-table" id="statsTable">
+        <thead>
+          <tr>
+            <th data-col="rank">Rank <span class="sort-indicator" id="sort-rank"></span></th>
+            <th data-col="team_name">Team <span class="sort-indicator" id="sort-team_name"></span></th>
+
+            <th data-col="attempts">ATT <span class="sort-indicator" id="sort-attempts"></span></th>
+            <th data-col="completions">CMP <span class="sort-indicator" id="sort-completions"></span></th>
+            <th data-col="completion_pct">CMP% <span class="sort-indicator" id="sort-completion_pct"></span></th>
+            <th data-col="passing_yards">YD <span class="sort-indicator" id="sort-passing_yards"></span></th>
+            <th data-col="pass_touchdowns">TD <span class="sort-indicator" id="sort-pass_touchdowns"></span></th>
+            <th data-col="interceptions">INT <span class="sort-indicator" id="sort-interceptions"></span></th>
+            <th data-col="pass_first_downs">1D <span class="sort-indicator" id="sort-pass_first_downs" ></span></th>
+            <th data-col="pass_first_down_rate">1D% <span class="sort-indicator" id="sort-pass_first_down_rate" ></span></th>
+            <th data-col="yards_per_attempt">YPA <span class="sort-indicator" id = "sort-yards_per_attempt" ></span></th>
+            <th data-col="air_yards_attempt">AY/A <span class="sort-indicator" id="sort-air_yards_attempt" ></span></th>
+            <th data-col="passer_rating">RTG <span class="sort-indicator" id = "sort-passer_rating" ></span></th>
+            <th data-col="total_pass_epa">Total EPA <span class="sort-indicator" id="sort-total_pass_epa"></span></th>
+            <th data-col="epa_per_attempt">EPA/ATT <span class="sort-indicator" id="sort-epa_per_attempt"></span></th>
+            <th data-col="cpoe">CPOE <span class="sort-indicator" id="sort-cpoe"></span></th>
+            <th data-col="pass_successes">Success <span class="sort-indicator" id="sort-pass_successes"></span></th>
+            <th data-col="pass_success_rate">Success% <span class="sort-indicator" id="sort-pass_success_rate" ></span></th>
+            <th data-col="explosive_passes">Explosive <span class="sort-indicator" id="sort-explosive_passes" ></span></th>
+            <th data-col="explosive_pass_rate">Explosive% <span class="sort-indicator" id="sort-explosive_pass_rate" ></span></th>
+            <th data-col="sack">Sk <span class="sort-indicator" id="sort-sack" ></span></th>
+          
+            
+            
+
+            
+            <th data-col="carries">ATT <span class="sort-indicator" id="sort-carries"></span></th>
+            <th data-col="rushing_yards">YD <span class="sort-indicator" id="sort-rushing_yards"></span></th>
+            <th data-col="yards_per_carry">YPC <span class="sort-indicator" id="sort-yards_per_carry"></span></th>
+            <th data-col="rush_touchdowns">TD <span class="sort-indicator" id="sort-rush_touchdowns"></span></th>
+            <th data-col="rush_first_downs">1D <span class="sort-indicator" id="sort-rush_first_downs" ></span></th>
+            <th data-col="rush_first_down_rate">1D% <span class="sort-indicator" id="sort-rush_first_down_rate" ></span></th>
+            <th data-col="total_rush_epa">Total EPA <span class="sort-indicator" id="sort-total_rush_epa"></span></th>
+            <th data-col="epa_per_rush">EPA/ATT <span class="sort-indicator" id="sort-epa_per_rush"></span></th>
+            <th data-col="rush_successes">Success <span class="sort-indicator" id="sort-rush_successes"></span></th>
+            <th data-col="rush_success_rate">Success% <span class="sort-indicator" id="sort-rush_success_rate" ></span></th>
+            <th data-col="explosive_rushes">Explosive <span class="sort-indicator" id="sort-explosive_rushes" ></span></th>
+            <th data-col="explosive_rush_rate">Explosive% <span class="sort-indicator" id="sort-explosive_rush_rate" ></span></th>
+            
+            <th data-col="plays">Plays <span class="sort-indicator" id="sort-plays"></span></th>
+            <th data-col="points_for_adjusted">PTS <span class="sort-indicator" id="sort-points_for_adjusted"></span></th>
+            <th data-col="total_yards">YD <span class="sort-indicator" id="sort-total_yards"></span></th>
+            <th data-col="yards_per_play">YPP <span class="sort-indicator" id="sort-yards_per_play"></span></th>
+            <th data-col="total_touchdowns">TD <span class="sort-indicator" id="sort-total_touchdowns"></span></th>
+            <th data-col="total_first_downs">1D <span class="sort-indicator" id="sort-total_first_downs"></span></th>
+            <th data-col="first_down_rate">1D% <span class="sort-indicator" id="sort-first_down_rate"></span></th>
+            <th data-col="total_epa">Total EPA <span class="sort-indicator" id="sort-total_epa"></span></th>
+            <th data-col="epa_per_play">EPA/Play <span class="sort-indicator" id="sort-epa_per_play"></span></th>
+            <th data-col="total_successes">Success <span class="sort-indicator" id="sort-total_successes"></span></th>
+            <th data-col="success_rate">Success% <span class="sort-indicator" id="sort-success_rate"></span></th>
+            <th data-col="explosive_plays">Explosive <span class="sort-indicator" id="sort-explosive_plays"></span></th>
+            <th data-col="explosive_play_rate">Explosive% <span class="sort-indicator" id="sort-explosive_play_rate"></span></th>
+          
+            
+
+            <th data-col="plays_allowed">Plays <span class="sort-indicator" id="sort-plays_allowed"></span></th>
+            <th data-col="points_against">PTS <span class="sort-indicator" id="sort-points_against"></span></th>
+            <th data-col="total_yards_allowed">YD <span class="sort-indicator" id="sort-total_yards_allowed"></span></th>
+            <th data-col="yards_per_play_allowed">YPP <span class="sort-indicator" id="sort-yards_per_play_allowed"></span></th>
+            <th data-col="total_touchdowns_allowed">TD <span class="sort-indicator" id="sort-total_touchdowns_allowed"></span></th>
+            <th data-col="total_first_downs_allowed">1D <span class="sort-indicator" id="sort-total_first_downs_allowed"></span></th>
+            <th data-col="first_down_rate_allowed">1D% <span class="sort-indicator" id="sort-first_down_rate_allowed"></span></th>
+            <th data-col="total_epa_allowed">Total EPA <span class="sort-indicator" id="sort-total_epa_allowed"></span></th>
+            <th data-col="epa_per_play_allowed">EPA/Play <span class="sort-indicator" id="sort-epa_per_play_allowed"></span></th>
+            <th data-col="total_successes_allowed">Success <span class="sort-indicator" id="sort-total_successes_allowed"></span></th>
+            <th data-col="success_rate_allowed">Success% <span class="sort-indicator" id="sort-success_rate_allowed"></span></th>
+            <th data-col="explosive_plays_allowed">Explosive <span class="sort-indicator" id="sort-explosive_plays_allowed"></span></th>
+            <th data-col="explosive_play_rate_allowed">Explosive% <span class="sort-indicator" id="sort-explosive_play_rate_allowed"></span></th>
+        
+          
+          </tr>
+        </thead>
+        <tbody id="statsTableBody">
+          </tbody>
+      </table>
+    </div>
+    
+    <div class="stats-key-container" id="statsKeyContainer" style="display: none;">
+    </div>
+
+    <div id="loading" class="loading" style="display: block;">
+      Loading Data....
+    </div>
+
+    <div id="error" class="error" style="display: none;">
+      </div>
+  </div>
+
+  <script>
+    // ===== PASSWORD PROTECTION =====
+    const DASHBOARD_PASSWORD = '33rdteam'; // Change this to your desired password
+    
+    // Check if user is already logged in
+    function checkLoginStatus() {
+      const isLoggedIn = sessionStorage.getItem('dashboardLoggedIn') === 'true';
+      if (isLoggedIn) {
+        showDashboard();
+      } else {
+        showLoginScreen();
+      }
+    }
+    
+    // Show login screen
+    function showLoginScreen() {
+      document.getElementById('loginScreen').style.display = 'flex';
+      document.getElementById('mainContent').style.display = 'none';
+    }
+    
+    // Show dashboard
+    function showDashboard() {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('mainContent').style.display = 'block';
+    }
+    
+    // Check password
+    function checkPassword() {
+      const password = document.getElementById('passwordInput').value;
+      const errorDiv = document.getElementById('loginError');
+      
+      if (password === DASHBOARD_PASSWORD) {
+        sessionStorage.setItem('dashboardLoggedIn', 'true');
+        showDashboard();
+        // Load CSV data after successful login
+        loadCSVFile();
+      } else {
+        errorDiv.textContent = 'Incorrect password. Please try again.';
+        document.getElementById('passwordInput').value = '';
+        document.getElementById('passwordInput').focus();
+      }
+    }
+    
+    // Logout function
+    function logout() {
+      sessionStorage.removeItem('dashboardLoggedIn');
+      showLoginScreen();
+      document.getElementById('passwordInput').value = '';
+    }
+
+    /**
+     * Switches between tabs, updating the active state and filtering data
+     * @param {string} tab - The tab to switch to ('PASS', 'RUSH', 'TEAM_O', 'TEAM_D', etc.)
+     */
+    // Switch between Offense and Defense categories
+    function switchCategory(category) {
+      // Update category tab states
+      document.getElementById('offenseCategory').classList.toggle('active', category === 'offense');
+      document.getElementById('defenseCategory').classList.toggle('active', category === 'defense');
+
+      // Show/hide appropriate sub-tabs
+      const offenseSubTabs = document.getElementById('offenseSubTabs');
+      const defenseSubTabs = document.getElementById('defenseSubTabs');
+
+      if (category === 'offense') {
+        offenseSubTabs.style.display = 'inline-flex';
+        defenseSubTabs.style.display = 'none';
+
+        // Switch to first offense tab (PASS by default)
+        const activeOffenseTab = offenseSubTabs.querySelector('.sub-tab.active');
+        if (activeOffenseTab && activeOffenseTab.id === 'passTab') {
+          switchTab('PASS');
+        } else if (activeOffenseTab && activeOffenseTab.id === 'rushTab') {
+          switchTab('RUSH');
+        } else {
+          switchTab('TEAM_O');
+        }
+      } else {
+        offenseSubTabs.style.display = 'none';
+        defenseSubTabs.style.display = 'inline-flex';
+
+        // Switch to first defense tab (PASS_DEF by default)
+        const activeDefenseTab = defenseSubTabs.querySelector('.sub-tab.active');
+        if (activeDefenseTab && activeDefenseTab.id === 'passDefTab') {
+          switchTab('PASS_DEF');
+        } else if (activeDefenseTab && activeDefenseTab.id === 'rushDefTab') {
+          switchTab('RUSH_DEF');
+        } else {
+          switchTab('TEAM_D');
+        }
+      }
+    }
+
+    function switchTab(tab) {
+      // Update the current tab state
+      currentTab = tab;
+
+      // Update sub-tab visual states for offense tabs
+      const offenseTabs = document.querySelectorAll('#offenseSubTabs .sub-tab');
+      offenseTabs.forEach(btn => {
+        btn.classList.remove('active');
+      });
+
+      // Update sub-tab visual states for defense tabs
+      const defenseTabs = document.querySelectorAll('#defenseSubTabs .sub-tab');
+      defenseTabs.forEach(btn => {
+        btn.classList.remove('active');
+      });
+
+      // Activate the correct tab
+      if (tab === 'PASS') {
+        document.getElementById('passTab').classList.add('active');
+      } else if (tab === 'RUSH') {
+        document.getElementById('rushTab').classList.add('active');
+      } else if (tab === 'TEAM_O') {
+        document.getElementById('teamOTab').classList.add('active');
+      } else if (tab === 'PASS_DEF') {
+        document.getElementById('passDefTab').classList.add('active');
+      } else if (tab === 'RUSH_DEF') {
+        document.getElementById('rushDefTab').classList.add('active');
+      } else if (tab === 'TEAM_D') {
+        document.getElementById('teamDTab').classList.add('active');
+      }
+
+      // Show/hide specific filters based on active tab
+      const filtersSection = document.getElementById('filtersSection');
+      // Clear all specific filter classes
+      filtersSection.classList.remove('show-rush-filters', 'show-pass-filters');
+
+      if (tab === 'RUSH' || tab === 'RUSH_DEF') {
+        filtersSection.classList.add('show-rush-filters');
+      } else if (tab === 'PASS' || tab === 'PASS_DEF') {
+        filtersSection.classList.add('show-pass-filters');
+      }
+
+      // Update the filters and re-render the table
+      updateFilters();
+    }
+    
+    // Allow Enter key to submit password
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          checkPassword();
+        }
+      });
+    });
+
+    // ===== GLOBAL VARIABLES =====
+    let rawData = [];           // Original CSV data as parsed by PapaParse
+    let filteredData = [];      // Data after applying user-selected filters
+    let currentSort = { column: 'team_name', direction: 'asc' }; // Current sort state (column and direction)
+    
+    // Unique values extracted from data for filter dropdowns
+    let uniqueWeeks = [];       // Unique week values from data
+    let uniquePosteams = [];    // Unique team values from data
+    let uniqueRoofs = [];       // Unique roof types from data
+    let uniqueSurfaces = [];    // Unique playing surfaces from data
+    let uniqueFieldZones = [];
+    let uniqueQbAlignments = []; // Unique QB alignment configurations from data
+    let uniqueBackfieldSets = []; // Unique backfield formations from data
+    let uniqueFamilies = [];    // Unique formation families from data
+    let uniqueDefensiveFronts = []; // Unique defensive front configurations from data
+    
+    let filtersCollapsed = true; // Track whether the filters section is collapsed
+    let currentTab = 'TEAM_O'; // Track the currently active tab (starts with Team Total offense)
+
+    // Define which columns belong to which tabs for conditional display
+    const PASS_KEYS = [
+      'attempts', 'completions', 'completion_pct', 'passing_yards',
+      'pass_touchdowns', 'interceptions', 'pass_first_downs',
+      'pass_first_down_rate', 'yards_per_attempt', 'air_yards_attempt', 'passer_rating', 'total_pass_epa', 'epa_per_attempt', 'cpoe',
+      'pass_successes', 'pass_success_rate', 'explosive_passes', 'explosive_pass_rate', 'sack'
+    ];
+    const RUSH_KEYS = [
+      'carries', 'rushing_yards', 'yards_per_carry', 'rush_touchdowns', 'rush_first_downs', 'rush_first_down_rate', 'total_rush_epa', 'epa_per_rush', 'rush_successes',
+      'rush_success_rate', 'explosive_rushes', 'explosive_rush_rate'
+    ];
+    const TEAM_O_KEYS = [
+      'plays', 'points_for_adjusted', 'total_yards', 'yards_per_play', 'total_touchdowns', 'total_first_downs', 'first_down_rate', 'total_epa', 
+      'epa_per_play', 'total_successes', 'success_rate', 'explosive_plays', 
+      'explosive_play_rate'
+    ];
+    const TEAM_D_KEYS = [
+      'plays_allowed', 'points_against', 'total_yards_allowed', 'yards_per_play_allowed', 'total_touchdowns_allowed', 'total_first_downs_allowed', 'first_down_rate_allowed',
+      'total_epa_allowed', 'epa_per_play_allowed', 'total_successes_allowed', 'success_rate_allowed', 'explosive_plays_allowed',
+      'explosive_play_rate_allowed'
+    ];
+    
+    // ===== CUSTOM MULTISELECT FUNCTIONALITY =====
+    
+    // Initialize custom multiselect components
+    function initializeMultiselects() {
+      const multiselects = document.querySelectorAll('.custom-multiselect');
+      
+      multiselects.forEach(container => {
+        const button = container.querySelector('.multiselect-button');
+        const dropdown = container.querySelector('.multiselect-dropdown');
+        const selectId = container.getAttribute('data-select');
+        
+        // Initialize selected values tracking
+        container.selectedValues = new Set(['ALL']);
+        
+        // Toggle dropdown on button click
+        button.addEventListener('click', (e) => {
+          e.stopPropagation();
+          toggleMultiselectDropdown(container);
+        });
+        
+        // Handle option clicks
+        dropdown.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const option = e.target.closest('.multiselect-option');
+          if (option) {
+            handleMultiselectOptionClick(container, option);
+          }
+        });
+        
+        // Set initial state
+        updateMultiselectButton(container);
+        updateMultiselectOptions(container);
+      });
+      
+      // Close dropdowns when clicking outside
+      document.addEventListener('click', () => {
+        multiselects.forEach(container => {
+          closeMultiselectDropdown(container);
+        });
+        // NEW: Close key dropdown as well
+        const keyDropdown = document.getElementById('keyDropdown');
+        if (keyDropdown.classList.contains('show')) {
+            keyDropdown.classList.remove('show');
+        }
+      });
+    }
+    
+    function toggleMultiselectDropdown(container) {
+      const button = container.querySelector('.multiselect-button');
+      const dropdown = container.querySelector('.multiselect-dropdown');
+      
+      const isOpen = dropdown.classList.contains('show');
+      
+      // Close all other dropdowns first
+      document.querySelectorAll('.custom-multiselect .multiselect-dropdown').forEach(d => {
+        d.classList.remove('show');
+        d.classList.remove('dropup'); // Also remove dropup class
+      });
+      document.querySelectorAll('.custom-multiselect .multiselect-button').forEach(b => {
+        b.classList.remove('open');
+      });
+      
+      if (!isOpen) {
+        // Check if dropdown should open upward
+        const rect = button.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        const dropdownHeight = 200; // max-height of dropdown
+        const spaceBelow = viewportHeight - rect.bottom;
+        const spaceAbove = rect.top;
+        
+        // If there's not enough space below and more space above, open upward
+        if (spaceBelow < dropdownHeight && spaceAbove > spaceBelow) {
+          dropdown.classList.add('dropup');
+        } else {
+          dropdown.classList.remove('dropup');
+        }
+        
+        dropdown.classList.add('show');
+        button.classList.add('open');
+      }
+    }
+    
+    function closeMultiselectDropdown(container) {
+      const button = container.querySelector('.multiselect-button');
+      const dropdown = container.querySelector('.multiselect-dropdown');
+      
+      dropdown.classList.remove('show');
+      button.classList.remove('open');
+    }
+    
+    function handleMultiselectOptionClick(container, option) {
+      const value = option.getAttribute('data-value');
+      const selectedValues = container.selectedValues;
+
+      // --- Single-select override ---
+      if (container.classList.contains('single-select')) {
+        selectedValues.clear();
+        selectedValues.add(value);
+        updateMultiselectOptions(container);
+        updateMultiselectButton(container);
+        closeMultiselectDropdown(container);
+        updateFilters();
+        return;
+      }
+      if (value === 'ALL') {
+        // If "ALL" is clicked, select only "ALL" and deselect everything else
+        selectedValues.clear();
+        selectedValues.add('ALL');
+      } else {
+        // If a specific option is clicked
+        if (selectedValues.has(value)) {
+          // If already selected, deselect it
+          selectedValues.delete(value);
+          // If no specific options are selected, default back to "ALL"
+          if (selectedValues.size === 0 || (selectedValues.size === 1 && selectedValues.has('ALL'))) {
+            selectedValues.clear();
+            selectedValues.add('ALL');
+          }
+        } else {
+          // If not selected, select it and remove "ALL"
+          selectedValues.delete('ALL');
+          selectedValues.add(value);
+        }
+      }
+      
+      updateMultiselectOptions(container);
+      updateMultiselectButton(container);
+      
+      // Trigger the filter update
+      updateFilters();
+    }
+    
+    function updateMultiselectOptions(container) {
+      const options = container.querySelectorAll('.multiselect-option');
+      const selectedValues = container.selectedValues;
+      
+      options.forEach(option => {
+        const value = option.getAttribute('data-value');
+        if (selectedValues.has(value)) {
+          option.classList.add('selected');
+        } else {
+          option.classList.remove('selected');
+        }
+      });
+    }
+    
+    function updateMultiselectButton(container) {
+      const button = container.querySelector('.multiselect-button');
+      const textSpan = button.querySelector('.multiselect-text');
+      const selectedValues = container.selectedValues;
+      const selectId = container.getAttribute('data-select');
+
+      // Update filter active state based on selection
+      updateFilterActiveState(container);
+
+      if (selectedValues.has('ALL') || selectedValues.size === 0) {
+        // Show default "All" text
+        switch(selectId) {
+          case 'teamSelect':
+            textSpan.textContent = 'All Teams';
+            break;
+          case 'weekSelect':
+            textSpan.textContent = 'All Weeks';
+            break;
+          case 'downSelect':
+            textSpan.textContent = 'All Downs';
+            break;
+          case 'distanceSelect':
+            textSpan.textContent = 'All Distances';
+            break;
+          case 'halfSelect':
+            textSpan.textContent = 'All Halves';
+            break;
+          case 'settingSelect':
+            textSpan.textContent = 'Home and Away';
+            break;
+          case 'passLocationSelect':
+          case 'runLocationSelect':
+            textSpan.textContent = 'All Locations';
+            break;
+          case 'qbAlignmentSelect':
+            textSpan.textContent = 'All Alignments';
+            break;
+          case 'runGapSelect':
+            textSpan.textContent = 'All Gaps';
+            break;
+          case 'backfieldSetSelect':
+            textSpan.textContent = 'All Backfield Sets';
+            break;
+          case 'familySelect':
+            textSpan.textContent = 'All Families';
+            break;
+          case 'defensiveFrontSelect':
+            textSpan.textContent = 'All Defensive Fronts';
+            break;
+          case 'personnelSelect':
+            textSpan.textContent = 'All Personnel';
+            break;
+          case 'defensivePackageSelect':
+            textSpan.textContent = 'All Packages';
+            break; 
+          case 'motionSelect':
+            textSpan.textContent = 'All Plays';
+            break;
+          case 'roofSelect':
+            textSpan.textContent = 'All Roof Types';
+             break;
+          case 'surfaceSelect':
+            textSpan.textContent = 'All Surfaces';
+             break;
+          case 'fieldZoneSelect':
+            textSpan.textContent = 'All Field Zones';
+             break;
+          case 'timeRemainingSelect':
+            textSpan.textContent = 'All Plays';
+             break;
+           case 'noHuddleSelect':
+            textSpan.textContent = 'All Huddle Types';
+             break;
+           case 'numMotionsSelect':
+            textSpan.textContent = 'All Motions';
+             break;
+          default:
+            textSpan.textContent = 'All';
+        }
+      } else {
+        // Show selected values
+        const valuesArray = Array.from(selectedValues);
+        if (valuesArray.length === 1) {
+          // For single selection, show the label
+          const option = container.querySelector(`[data-value="${valuesArray[0]}"]`);
+          if (option) {
+            const label = option.querySelector('span:last-child').textContent;
+            textSpan.textContent = label;
+          }
+        } else if (valuesArray.length <= 3) {
+          // For multiple selections (up to 3), show comma-separated labels
+          const labels = valuesArray.map(value => {
+            const option = container.querySelector(`[data-value="${value}"]`);
+            return option ? option.querySelector('span:last-child').textContent : value;
+          });
+          textSpan.textContent = labels.join(', ');
+        } else {
+          // For many selections, show count
+          textSpan.textContent = `${valuesArray.length} selected`;
+        }
+      }
+    }
+
+    // Function to update filter active state (neon green border when filter is selected)
+    function updateFilterActiveState(container) {
+      const button = container.querySelector('.multiselect-button');
+      const selectedValues = container.selectedValues;
+
+      // Check if filter has any selection other than "ALL"
+      const isActive = selectedValues &&
+                       selectedValues.size > 0 &&
+                       !selectedValues.has('ALL');
+
+      // Add or remove the active class based on selection state
+      if (isActive) {
+        button.classList.add('filter-active');
+      } else {
+        button.classList.remove('filter-active');
+      }
+    }
+
+    function getCustomMultiselectValue(selectId) {
+        const container = document.querySelector(`[data-select="${selectId}"]`);
+        if (!container || !container.selectedValues) return 'ALL';
+        
+        const selectedValues = container.selectedValues;
+        if (selectedValues.has('ALL') || selectedValues.size === 0) {
+            return 'ALL';
+        }
+        
+        if (container.classList.contains('single-select')) {
+            return Array.from(selectedValues)[0];
+        }
+        
+        return Array.from(selectedValues);
+    }
+    
+    function resetCustomMultiselect(selectId) {
+      const container = document.querySelector(`[data-select="${selectId}"]`);
+      if (container && container.selectedValues) {
+        container.selectedValues.clear();
+        container.selectedValues.add('ALL');
+        updateMultiselectOptions(container);
+        updateMultiselectButton(container);
+        updateFilterActiveState(container);
+      }
+    }
+    
+    function populateCustomMultiselect(selectId, items, allValue, allLabel) {
+      const container = document.querySelector(`[data-select="${selectId}"]`);
+      if (!container) return;
+      
+      const dropdown = container.querySelector('.multiselect-dropdown');
+      dropdown.innerHTML = '';
+      
+      // Add "ALL" option
+      const allOption = document.createElement('div');
+      allOption.className = 'multiselect-option';
+      allOption.setAttribute('data-value', allValue);
+      allOption.innerHTML = `
+        <span class="multiselect-checkbox"></span>
+        <span>${allLabel}</span>
+      `;
+      dropdown.appendChild(allOption);
+      
+      // Add individual options
+      items.forEach(({ value, label }) => {
+        const option = document.createElement('div');
+        option.className = 'multiselect-option';
+        option.setAttribute('data-value', value);
+        option.innerHTML = `
+          <span class="multiselect-checkbox"></span>
+          <span>${label}</span>
+        `;
+        dropdown.appendChild(option);
+      });
+      
+      // Initialize selection state
+      if (!container.selectedValues) {
+        container.selectedValues = new Set(['ALL']);
+      }
+      
+      updateMultiselectOptions(container);
+      updateMultiselectButton(container);
+    }
+
+    // ===== INITIALIZE DASHBOARD =====
+    document.addEventListener('DOMContentLoaded', function() {
+      // Check login status first
+      checkLoginStatus();
+      
+      // Initialize custom multiselects
+      initializeMultiselects();
+
+      // Tab buttons now use onclick handlers in HTML
+
+      // Auto-select functionality for location filters
+      document.addEventListener('click', function(e) {
+        const option = e.target.closest('.multiselect-option');
+        if (!option) return;
+        
+        const container = option.closest('.custom-multiselect');
+        if (!container) return;
+        
+        const selectId = container.getAttribute('data-select');
+        const value = option.getAttribute('data-value');
+        
+        // Auto-select play type tab when location filters are changed
+        if (selectId === 'passLocationSelect' && value !== 'ALL' && !container.selectedValues.has('ALL')) {
+          switchTab('PASS');
+        } else if ((selectId === 'runLocationSelect' || selectId === 'runGapSelect') && value !== 'ALL' && !container.selectedValues.has('ALL')) {
+          switchTab('RUSH');
+        }
+      });
+    });
+
+    /**
+     * Automatically loads the CSV file from the same directory
+     */
+    function loadCSVFile() {
+      // Show loading indicator
+      document.getElementById('loading').style.display = 'block';
+      document.getElementById('error').style.display = 'none';
+
+      // Fetch the CSV file from the same directory
+      fetch('zenith_fastr.csv')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Failed to load CSV file: ${response.status} ${response.statusText}`);
+          }
+          return response.text();
+        })
+        .then(csvText => {
+          // Parse the CSV text using PapaParse
+          Papa.parse(csvText, {
+            header: true,           // Treat first row as column headers
+            skipEmptyLines: true,   // Ignore completely empty rows
+            dynamicTyping: true,    // Automatically convert strings to numbers where appropriate
+            complete: function(results) {
+              // This callback runs when parsing is complete
+              try {
+                // Process the successfully parsed data
+                processCSVData(results);
+              } catch (error) {
+                // Handle any errors that occur during data processing
+                console.error('Error processing data:', error);
+                showError('Error processing data: ' + error.message);
+              }
+            },
+            error: function(error) {
+              // This callback runs if CSV parsing fails
+              console.error('Error parsing CSV:', error);
+              showError('Error parsing CSV: ' + error.message);
+            }
+          });
+        })
+        .catch(error => {
+          console.error('Error loading CSV file:', error);
+          showError('Error loading CSV file: ' + error.message + '. Make sure zenith_fastr.csv is in the same directory as this HTML file. If deployed, ensure the CSV file is included in your deployment.');
+        });
+    }
+
+    /**
+     * Processes the parsed CSV data and sets up the dashboard interface
+     * @param {Object} results - PapaParse results object containing parsed data and metadata
+     */
+    function processCSVData(results) {
+      // Store the parsed data globally for use throughout the application
+      rawData = results.data;
+      
+      // Validate that we actually have data to work with
+      if (!Array.isArray(rawData) || rawData.length === 0) {
+        throw new Error('No rows found in CSV file. Please check your file format.');
+      }
+
+      // Log success information for debugging
+      console.log('Data loaded successfully:', rawData.length, 'rows');
+      console.log('Sample row:', rawData[0]);
+
+      // Extract unique values from the data for filter dropdown options
+      extractUniqueFilterValues();
+
+      // Populate the filter dropdown menus with the extracted values
+      populateFilterDropdowns();
+
+      // Show the interface sections now that data is loaded
+      document.getElementById('tabContainer').style.display = 'flex';
+      document.getElementById('filtersSection').style.display = 'block';
+      document.getElementById('tableContainer').style.display = 'block';
+      // document.getElementById('statsKeyContainer').style.display = 'block'; // This is no longer needed
+      document.getElementById('loading').style.display = 'none';
+
+      // Set up click handlers for table column sorting
+      attachSortingHandlers();
+      
+      // Apply initial filters (with default "show all" settings) and render the table
+      switchTab(currentTab);
+    }
+
+    /**
+     * Extracts unique values from the raw data for use in filter dropdowns
+     * This function scans through all data rows to find unique values for each filterable field
+     */
+    function extractUniqueFilterValues() {
+      // Helper function to filter out NA values and empty/null values
+      const filterValidValues = (value) => {
+        return value && 
+               value !== 'NA' && 
+               value !== 'null' && 
+               value !== 'undefined' && 
+               value !== '' &&
+               String(value).toLowerCase() !== 'na' &&
+               String(value).toLowerCase() !== 'null';
+      };
+
+      // Extract unique weeks, filtering out invalid values, and sort numerically
+      uniqueWeeks = Array.from(
+        new Set(rawData.map(r => r.week).filter(isValidNumber))
+      ).sort((a,b) => a - b);
+      
+      // Extract unique team names from both posteam and defteam, filtering out empty/null values, and sort alphabetically
+      uniquePosteams = Array.from(
+        new Set([
+          ...rawData.map(r => r.posteam).filter(filterValidValues),
+          ...rawData.map(r => r.defteam).filter(filterValidValues)
+        ])
+      ).sort();
+
+      uniqueFieldZones = Array.from(
+        new Set(rawData.map(r => r.field_zone).filter(filterValidValues))
+      ).sort();
+      // Extract unique backfield formations from the data, filter out empty/NA values, sort alphabetically
+      uniqueBackfieldSets = Array.from(
+        new Set(rawData.map(r => r.backfield_set).filter(filterValidValues))
+      ).sort();
+
+      uniqueQbAlignments = Array.from(
+        new Set(rawData.map(r => r.qb_alignment).filter(filterValidValues))
+      ).sort();
+
+      // Extract unique formation families from the data, filter out empty/NA values, sort alphabetically  
+      uniqueFamilies = Array.from(
+        new Set(rawData.map(r => r.family).filter(filterValidValues))
+      ).sort();
+
+      // Extract unique defensive front configurations from the data, filter out empty/NA values, sort alphabetically
+      uniqueDefensiveFronts = Array.from(
+        new Set(rawData.map(r => r.defensive_front_family).filter(filterValidValues))
+      ).sort();
+    }
+
+    /**
+     * Populates the filter dropdown menus with options extracted from the data
+     */
+    function populateFilterDropdowns() {
+      // Populate custom multiselects
+      populateCustomMultiselect(
+        'teamSelect', 
+        uniquePosteams.map(t => ({ value: t, label: t })), 
+        'ALL', 
+        'All Teams'
+      );
+      
+      populateCustomMultiselect(
+        'weekSelect', 
+        uniqueWeeks.map(w => ({ value: String(w), label: `W${w}` })), 
+        'ALL', 
+        'All Weeks'
+      );
+      
+      populateCustomMultiselect(
+        'backfieldSetSelect',
+        uniqueBackfieldSets.map(b => ({ value: b, label: b })),
+        'ALL',
+        'All Backfield Sets'
+      );
+
+      populateCustomMultiselect(
+        'familySelect',
+        uniqueFamilies.map(f => ({ value: f, label: f })),
+        'ALL',
+        'All Families'
+      );
+      
+
+      populateCustomMultiselect(
+        'defensiveFrontSelect',
+        uniqueDefensiveFronts.map(d => ({ value: d, label: d })),
+        'ALL',
+        'All Defensive Fronts'
+      );
+
+      populateCustomMultiselect(
+        'fieldZoneSelect',
+        uniqueFieldZones.map(f => ({ value: f, label: f })),
+        'ALL',
+        'All Field Zones'
+      );
+    }
+    
+    /**
+     * NEW: Toggles the visibility of the stats key dropdown.
+     * @param {Event} event - The click event to stop it from closing immediately.
+     */
+    function toggleKeyDropdown(event) {
+        event.stopPropagation();
+        const dropdown = document.getElementById('keyDropdown');
+        dropdown.classList.toggle('show');
+    }
+
+    /**
+     * Toggles the collapse state of the filters section to save screen space
+     * This allows users to hide filters after making their selections
+     */
+    function toggleFilters() {
+      const content = document.getElementById('filtersContent');
+      const icon = document.getElementById('collapseIcon');
+      
+      // Toggle the collapsed state
+      filtersCollapsed = !filtersCollapsed;
+      
+      if (filtersCollapsed) {
+        // Hide the filters content and change icon to indicate expansion is possible
+        content.classList.add('collapsed');
+        icon.textContent = '▶'; // Right arrow when collapsed
+      } else {
+        // Show the filters content and change icon to indicate collapse is possible
+        content.classList.remove('collapsed');
+        icon.textContent = '▼'; // Down arrow when expanded
+      }
+    }
+
+    /**
+     * Resets all filters to their default "All" values
+     * @param {Event} event - Click event to prevent propagation to parent
+     */
+    function resetAllFilters(event) {
+      event.stopPropagation(); // Prevent triggering the collapse/expand functionality
+      
+      // Reset custom multiselects
+      resetCustomMultiselect('teamSelect');
+      resetCustomMultiselect('weekSelect');
+      resetCustomMultiselect('downSelect');
+      resetCustomMultiselect('distanceSelect');
+      resetCustomMultiselect('halfSelect');
+      resetCustomMultiselect('settingSelect');
+      resetCustomMultiselect('passLocationSelect');
+      resetCustomMultiselect('runLocationSelect');
+      resetCustomMultiselect('runGapSelect');
+      resetCustomMultiselect('backfieldSetSelect');
+      resetCustomMultiselect('familySelect');
+      resetCustomMultiselect('defensiveFrontSelect');
+      resetCustomMultiselect('personnelSelect');
+      resetCustomMultiselect('defensivePackageSelect');
+      resetCustomMultiselect('motionSelect');
+      resetCustomMultiselect('scrambleSelect');
+      resetCustomMultiselect('qbAlignmentSelect');
+      resetCustomMultiselect('roofSelect');
+      resetCustomMultiselect('surfaceSelect');
+      resetCustomMultiselect('fieldZoneSelect');
+      resetCustomMultiselect('timeRemainingSelect');
+      resetCustomMultiselect('noHuddleSelect');
+      resetCustomMultiselect('numMotionsSelect');
+
+      // Reset to Team Offense tab
+      switchTab('TEAM_O');
+      
+      // Apply the reset filters to update the table
+      updateFilters();
+    }
+
+    /**
+     * Downloads the current filtered table data as a CSV file
+     * @param {Event} event - Click event to prevent propagation to parent
+     */
+    function downloadTableAsCSV(event) {
+      event.stopPropagation(); // Prevent triggering the collapse/expand functionality
+
+      const isDefense = ['PASS_DEF', 'RUSH_DEF', 'TEAM_D'].includes(currentTab);
+      
+      // Get the current filtered and sorted team statistics
+      const teamStats = isDefense ? aggregateDefenseStats(filteredData) : aggregateTeamStats(filteredData);
+      const sorted = sortTeamStats(teamStats, currentSort.column, currentSort.direction);
+      
+      if (sorted.length === 0) {
+        alert('No data available to download');
+        return;
+      }
+      
+      // Define CSV headers based on offense/defense
+      let headers;
+      const baseHeaders = ['Rank', 'Team'];
+      const passHeaders = ['Pass Attempts', 'Completions', 'Completion %', 'Pass Yards', 'Pass TDs', 'INTs', 'Pass 1D', 'Pass 1D%', 'Y/A', 'AY/A', 'Rating', 'Total Pass EPA', 'EPA/Attempt', 'CPOE', 'Successful Pass Plays', 'Successful Pass Play %', 'Explosive Pass Plays', 'Explosive Pass Play %', 'Sacks'];
+      const rushHeaders = ['Carries', 'Rush Yards', 'YPC', 'Rush TDs', 'Rush 1D', 'Rush 1D%', 'Total Rush EPA', 'EPA/Rush', 'Successful Rush Plays', 'Successful Rush Play %', 'Explosive Rush Plays', 'Explosive Rush Play %'];
+      const teamHeaders = ['Plays', 'Points', 'Total Yards', 'Yards/Play', 'Total TDs', 'Total 1D', '1D %', 'Total EPA', 'EPA/Play', 'Successful Plays', 'Success %', 'Explosive Plays', 'Explosive Play %'];
+
+      if (isDefense) {
+        const passHeadersAllowed = passHeaders.map(h => `${h} Allowed`);
+        const rushHeadersAllowed = rushHeaders.map(h => `${h} Allowed`);
+        const teamHeadersAllowed = teamHeaders.map(h => `${h} Allowed`);
+        headers = [...baseHeaders, ...passHeadersAllowed, ...rushHeadersAllowed, ...teamHeadersAllowed];
+      } else {
+        headers = [...baseHeaders, ...passHeaders, ...rushHeaders, ...teamHeaders];
+      }
+      
+      // Convert data to CSV format
+      const csvRows = [];
+      csvRows.push(headers.join(','));
+      
+      sorted.forEach(team => {
+        const passStats = [
+          team.attempts || 0,
+          team.completions || 0,
+          team.completion_pct ? team.completion_pct.toFixed(1) : '0.0',
+          team.passing_yards || 0,
+          team.pass_touchdowns || 0,
+          team.interceptions || 0,
+          team.pass_first_downs || 0,
+          team.pass_first_down_rate ? team.pass_first_down_rate.toFixed(1) : '0.0',
+          team.yards_per_attempt ? team.yards_per_attempt.toFixed(1) : '0.0',
+          team.air_yards_attempt ? team.air_yards_attempt.toFixed(1) : '0.0',
+          team.passer_rating ? team.passer_rating.toFixed(1) : '0.0',
+          team.total_pass_epa ? team.total_pass_epa.toFixed(2) : '0.00',
+          team.epa_per_attempt ? team.epa_per_attempt.toFixed(2) : '0.00',
+          team.cpoe ? team.cpoe.toFixed(1) : '0.0',
+          team.pass_successes || 0,
+          team.pass_success_rate ? team.pass_success_rate.toFixed(1) : '0.0',
+          team.explosive_passes || 0,
+          team.explosive_pass_rate ? team.explosive_pass_rate.toFixed(1) : '0.0',
+          team.sack || 0,
+        ];
+
+        const rushStats = [
+          team.carries || 0,
+          team.rushing_yards || 0,
+          team.yards_per_carry ? team.yards_per_carry.toFixed(1) : '0.0',
+          team.rush_touchdowns || 0,
+          team.rush_first_downs || 0,
+          team.rush_first_down_rate ? team.rush_first_down_rate.toFixed(1) : '0.0',
+          team.total_rush_epa ? team.total_rush_epa.toFixed(2) : '0.00',
+          team.epa_per_rush ? team.epa_per_rush.toFixed(2) : '0.00',
+          team.rush_successes || 0,
+          team.rush_success_rate ? team.rush_success_rate.toFixed(1) : '0.0',
+          team.explosive_rushes || 0,
+          team.explosive_rush_rate ? team.explosive_rush_rate.toFixed(1) : '0.0',
+        ];
+
+        let teamLevelStats;
+        if (isDefense) {
+            teamLevelStats = [
+                team.plays_allowed || 0,
+                team.points_against || 0,
+                team.total_yards_allowed || 0,
+                team.yards_per_play_allowed ? team.yards_per_play_allowed.toFixed(1) : '0.0',
+                team.total_touchdowns_allowed || 0,
+                team.total_first_downs_allowed || 0,
+                team.first_down_rate_allowed ? team.first_down_rate_allowed.toFixed(1) : '0.0',
+                team.total_epa_allowed ? team.total_epa_allowed.toFixed(2) : '0.00',
+                team.epa_per_play_allowed ? team.epa_per_play_allowed.toFixed(2) : '0.00',
+                team.total_successes_allowed || 0,
+                team.success_rate_allowed ? team.success_rate_allowed.toFixed(1) : '0.0',
+                team.explosive_plays_allowed || 0,
+                team.explosive_play_rate_allowed ? team.explosive_play_rate_allowed.toFixed(1) : '0.0'
+            ];
+        } else {
+            teamLevelStats = [
+                team.plays || 0,
+                team.points_for_adjusted || 0,
+                team.total_yards || 0,
+                team.yards_per_play ? team.yards_per_play.toFixed(1) : '0.0',
+                team.total_touchdowns || 0,
+                team.total_first_downs || 0,
+                team.first_down_rate ? team.first_down_rate.toFixed(1) : '0.0',
+                team.total_epa ? team.total_epa.toFixed(2) : '0.00',
+                team.epa_per_play ? team.epa_per_play.toFixed(2) : '0.00',
+                team.total_successes || 0,
+                team.success_rate ? team.success_rate.toFixed(1) : '0.0',
+                team.explosive_plays || 0,
+                team.explosive_play_rate ? team.explosive_play_rate.toFixed(1) : '0.0'
+            ];
+        }
+
+        const row = [
+          team.rank || '',
+          `"${team.team_name || ''}"`,
+          ...passStats,
+          ...rushStats,
+          ...teamLevelStats,
+        ];
+        csvRows.push(row.join(','));
+      });
+      
+      // Create and download the CSV file
+      const csvContent = csvRows.join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      
+      if (link.download !== undefined) {
+        const url = URL.createObjectURL(blob);
+        const filename = isDefense ? 'nfl_team_defense_stats.csv' : 'nfl_team_offense_stats.csv';
+        link.setAttribute('href', url);
+        link.setAttribute('download', filename);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    }
+
+
+    /**
+     * Populates a select dropdown element with options
+     * @param {string} selectId - ID of the select element to populate
+     * @param {Array} items - Array of {value, label} objects for the options
+     * @param {string} allValue - Value to use for the "All" option
+     * @param {string} allLabel - Display text for the "All" option
+     */
+    function populateSelectOptions(selectId, items, allValue, allLabel) {
+      const select = document.getElementById(selectId);
+      select.innerHTML = ''; // Clear any existing options
+      
+      // Add the "All" option first (allows users to see all data)
+      const allOpt = document.createElement('option');
+      allOpt.value = allValue;
+      allOpt.textContent = allLabel;
+      select.appendChild(allOpt);
+      
+      // Add individual options from the provided items array
+      items.forEach(({ value, label }) => {
+        const opt = document.createElement('option');
+        opt.value = value;
+        opt.textContent = label;
+        select.appendChild(opt);
+      });
+    }
+
+    /**
+     * Helper function to check if a value is valid (not null, undefined, empty, or NA)
+     * @param {*} value - Value to check
+     * @returns {boolean} True if value is considered valid for filtering
+     */
+    function isValidFilterValue(value) {
+      if (value === null || value === undefined || value === '') return false;
+      const strValue = String(value).toLowerCase().trim();
+      return strValue !== 'na' && 
+             strValue !== 'null' && 
+             strValue !== 'undefined' &&
+             strValue !== 'nan';
+    }
+
+    /**
+     * Applies all currently selected filters to the data and updates the table display
+     * This function is called whenever any filter selection changes
+     */
+    function updateFilters() {
+      // Get current values from all filter dropdowns
+      const teamVal = getCustomMultiselectValue('teamSelect');
+      const weekVal = getCustomMultiselectValue('weekSelect');
+      const playType = currentTab;
+      const downVal = getCustomMultiselectValue('downSelect');
+      const distanceVal = getCustomMultiselectValue('distanceSelect');
+      const halfVal = getCustomMultiselectValue('halfSelect');
+      const settingVal = getCustomMultiselectValue('settingSelect');
+      const scrambleVal = getCustomMultiselectValue('scrambleSelect');
+      const passLocationVal = getCustomMultiselectValue('passLocationSelect');
+      const runLocationVal = getCustomMultiselectValue('runLocationSelect');
+      const runGapVal = getCustomMultiselectValue('runGapSelect');
+      const roofVal = getCustomMultiselectValue('roofSelect');
+      const surfaceVal = getCustomMultiselectValue('surfaceSelect');
+      const fieldZoneVal = getCustomMultiselectValue('fieldZoneSelect');
+      const timeRemainingVal = getCustomMultiselectValue('timeRemainingSelect');
+      const noHuddleVal = getCustomMultiselectValue('noHuddleSelect');
+      const qbAlignmentVal = getCustomMultiselectValue('qbAlignmentSelect');
+      const backfieldSetVal = getCustomMultiselectValue('backfieldSetSelect');
+      const familyVal = getCustomMultiselectValue('familySelect');
+      const defensiveFrontVal = getCustomMultiselectValue('defensiveFrontSelect');
+      const personnelVal = getCustomMultiselectValue('personnelSelect');
+      const defensivePackageVal = getCustomMultiselectValue('defensivePackageSelect');
+      const motionVal = getCustomMultiselectValue('motionSelect');
+      const numMotionsVal = getCustomMultiselectValue('numMotionsSelect');
+
+      // Filter the raw data based on all selected criteria
+      filteredData = rawData.filter(row => {
+        // General Filters
+        const teamField = (playType === 'PASS_DEF' || playType === 'RUSH_DEF' || playType === 'TEAM_D') ? row.defteam : row.posteam;
+        if (teamVal !== 'ALL' && !teamVal.includes(teamField)) return false;
+
+        if (weekVal !== 'ALL' && !weekVal.includes(String(row.week))) return false;
+        
+        if (playType === 'PASS' || playType === 'PASS_DEF') {
+            const isPassAttempt = isValidNumber(row.pass_attempt) && row.pass_attempt === 1;
+            const isSack = isValidNumber(row.sack) && row.sack === 1;
+            // Keep the row if it's a pass attempt OR a sack
+            if (!isPassAttempt && !isSack) return false;
+        } else if (playType === 'RUSH' || playType === 'RUSH_DEF') {
+            if (!isValidNumber(row.rush_attempt) || row.rush_attempt !== 1) return false;
+        } else if (playType === 'TEAM_O' || playType === 'TEAM_D') {
+            const isPass = isValidNumber(row.pass_attempt) && row.pass_attempt === 1;
+            const isRush = isValidNumber(row.rush_attempt) && row.rush_attempt === 1;
+            const isSack = isValidNumber(row.sack) && row.sack === 1;
+            const isPenaltyFirstDown = isValidNumber(row.first_down_penalty) && row.first_down_penalty === 1;
+            
+            // Keep the row if it's a pass, rush, sack, OR results in a first down by penalty
+            if (!isPass && !isRush && !isSack && !isPenaltyFirstDown) return false;
+        }
+
+        // ===== CHANGE: Down filter now uses 'down.x' column =====
+        if (downVal !== 'ALL' && !downVal.includes(String(row['down.x']))) return false;
+
+        if (distanceVal !== 'ALL') {
+          const ytg = row.yardsToGo;
+          if (!isValidNumber(ytg)) return false;
+          
+          const matches = distanceVal.some(dist => {
+            if (dist === 'short') return ytg >= 1 && ytg <= 3;
+            if (dist === 'medium') return ytg >= 4 && ytg <= 7;
+            if (dist === 'long') return ytg >= 8;
+            return false;
+          });
+
+          if (!matches) return false;
+        }
+
+        if (halfVal !== 'ALL' && !halfVal.includes(row.game_half)) return false;
+        if (settingVal !== 'ALL' && !settingVal.includes(row.posteam_type)) return false;
+
+        // nflfastR Filters
+        if (scrambleVal !== 'ALL' && (!isValidNumber(row.qb_scramble) || row.qb_scramble !== Number(scrambleVal))) return false;
+        
+        const isPassPlay = isValidNumber(row.pass_attempt) && row.pass_attempt === 1;
+        const isRushPlay = isValidNumber(row.rush_attempt) && row.rush_attempt === 1;
+
+        if (passLocationVal !== 'ALL' && isPassPlay && !passLocationVal.includes(row.pass_location)) {
+          return false;
+        }
+
+        if (runLocationVal !== 'ALL' && isRushPlay && !runLocationVal.includes(row.run_location)) {
+          return false;
+        }
+        
+        if (runGapVal !== 'ALL' && isRushPlay && !runGapVal.includes(row.run_gap)) {
+          return false;
+        }
+        
+        if (roofVal !== 'ALL') {
+            const isIndoor = row.roof === 'closed' || row.roof === 'dome';
+            if (roofVal === 'Indoor' && !isIndoor) return false;
+            if (roofVal === 'Outdoor' && isIndoor) return false;
+        }
+
+        if (surfaceVal !== 'ALL') {
+            const isGrass = row.surface && String(row.surface).toLowerCase().includes('grass');
+            if (surfaceVal === 'Grass' && !isGrass) return false;
+            if (surfaceVal === 'Turf' && isGrass) return false;
+        }
+
+        if (fieldZoneVal !== 'ALL' && !fieldZoneVal.includes(row.field_zone)) return false;
+        
+        if (timeRemainingVal !== 'ALL') {
+            let timeMatch = false;
+            for (const val of timeRemainingVal) {
+                if (val === '2MIN' && row.is_2min === '2 Minute') { timeMatch = true; break; }
+                if (val === '4MIN' && row.is_4min === '4 Minute') { timeMatch = true; break; }
+                if (val === 'NORMAL' && row.is_2min !== '2 Minute' && row.is_4min !== '4 Minute') { timeMatch = true; break; }
+            }
+            if (!timeMatch) return false;
+        }
+
+        // Zenith Filters
+        if (noHuddleVal !== 'ALL') {
+            if (row.no_huddle !== (noHuddleVal === 'true')) return false;
+        }
+        if (qbAlignmentVal !== 'ALL' && !qbAlignmentVal.includes(row.qb_alignment)) return false;
+        if (backfieldSetVal !== 'ALL' && !backfieldSetVal.includes(row.backfield_set)) return false;
+        if (familyVal !== 'ALL' && !familyVal.includes(row.family)) return false;
+        if (defensiveFrontVal !== 'ALL' && !defensiveFrontVal.includes(row.defensive_front_family)) return false;
+        if (personnelVal !== 'ALL' && !personnelVal.includes(String(row.personnel))) return false;
+        if (defensivePackageVal !== 'ALL' && !defensivePackageVal.includes(row.defensive_package)) return false;
+        
+        if (motionVal !== 'ALL') {
+            if (!motionVal.some(motion => isValidNumber(row[motion]) && row[motion] === 1)) return false;
+        }
+
+        if (numMotionsVal !== 'ALL') {
+            if (!isValidNumber(row.num_motions)) return false;
+
+            const numMotions = row.num_motions;
+            const matches = numMotionsVal.some(val => {
+                if (val === '0') return numMotions === 0;
+                if (val === '1') return numMotions === 1;
+                if (val === '2') return numMotions === 2;
+                if (val === '3+') return numMotions >= 3;
+                return false;
+            });
+
+            if (!matches) return false;
+        }
+
+        return true;
+      });
+
+      // Aggregate, sort, and render the table
+      const teamStats = (currentTab === 'PASS_DEF' || currentTab === 'RUSH_DEF' || currentTab === 'TEAM_D')
+        ? aggregateDefenseStats(filteredData)
+        : aggregateTeamStats(filteredData);
+      const sorted = sortTeamStats(teamStats, currentSort.column, currentSort.direction);
+      renderTable(sorted);
+      updateHeaderSortIndicators();
+    }
+
+    /**
+     * Aggregates individual plays into comprehensive team-level statistics
+     * @param {Array} data - Filtered array of play-by-play data
+     * @returns {Array} Array of team statistics objects with calculated metrics
+     */
+    function aggregateTeamStats(data) {
+     
+        const relevantGameIds = new Set(data.map(r => r.game_id));
+
+       
+        const gameData = rawData.filter(r => relevantGameIds.has(r.game_id));
+
+      
+        const gameScores = {};
+        gameData.forEach(row => {
+            if (row.game_id && row.scoring_team && isValidNumber(row.total_points)) {
+                if (!gameScores[row.game_id]) {
+                    gameScores[row.game_id] = {};
+                }
+                const currentMax = gameScores[row.game_id][row.scoring_team] || 0;
+                gameScores[row.game_id][row.scoring_team] = Math.max(currentMax, row.total_points);
+            }
+        });
+
+        const totalPointsScored = {};
+        for (const game_id in gameScores) {
+            for (const team in gameScores[game_id]) {
+                if (!totalPointsScored[team]) {
+                    totalPointsScored[team] = 0;
+                }
+                totalPointsScored[team] += gameScores[game_id][team];
+            }
+        }
+    
+
+        // Group plays by team using posteam as the key (uses the filtered `data` for play stats)
+        const teams = {};
+        data.forEach(row => {
+          const key = row.posteam; // Team identifier (e.g., 'KC', 'BUF')
+          if (!isValidFilterValue(key)) return; // Skip rows without a valid team identifier
+
+          // Initialize team object for first encounter with this team
+          if (!teams[key]) {
+            teams[key] = {
+              posteam: key,
+              team_name: row.team_name,
+              team_logo_wikipedia: row.team_logo_wikipedia,
+              passing_yards: [],
+              pass_epa: [],
+              yards_gained: [],
+              sack_yards: [],
+              rush_epa: [],
+              pass_attempt: [],
+              complete_pass: [],
+              rush_attempt: [],
+              air_yards: [],
+              cpoe: [],
+              sack: [],
+              sack_epa: [],
+              success: [],
+              first_down_pass: [],
+              first_down_rush: [],
+              first_down_penalty: [], 
+              pass_touchdown: [],
+              interception: [],
+              rush_touchdown: [],
+              touchdown: []
+            };
+          }
+
+          const t = teams[key];
+          
+          if (isValidNumber(row.passing_yards)) t.passing_yards.push(row.passing_yards);
+          if (isValidNumber(row.cpoe)) t.cpoe.push(row.cpoe);
+          if (isValidNumber(row.yards_gained)) t.yards_gained.push(row.yards_gained);
+          if (isValidNumber(row.sack) && row.sack === 1 && isValidNumber(row.yards_gained)) t.sack_yards.push(row.yards_gained);
+          if (row.pass_attempt === 1 && isValidNumber(row.epa)) t.pass_epa.push(row.epa);
+          if (row.rush_attempt === 1 && isValidNumber(row.epa)) t.rush_epa.push(row.epa);
+          if (row.sack == 1 && isValidNumber(row.epa)) t.sack_epa.push(row.epa);
+          if (isValidNumber(row.pass_attempt)) t.pass_attempt.push(row.pass_attempt);
+          if (isValidNumber(row.complete_pass)) t.complete_pass.push(row.complete_pass);
+          if (isValidNumber(row.rush_attempt)) t.rush_attempt.push(row.rush_attempt);
+          if (isValidNumber(row.air_yards)) t.air_yards.push(row.air_yards);
+          if (isValidNumber(row.sack)) t.sack.push(row.sack);
+          if (isValidNumber(row.success)) t.success.push(row.success);
+          if (isValidNumber(row.first_down_pass)) t.first_down_pass.push(row.first_down_pass);
+          if (isValidNumber(row.first_down_rush)) t.first_down_rush.push(row.first_down_rush);
+          if (isValidNumber(row.first_down_penalty)) t.first_down_penalty.push(row.first_down_penalty); 
+          if (isValidNumber(row.pass_touchdown)) t.pass_touchdown.push(row.pass_touchdown);
+          if (isValidNumber(row.interception)) t.interception.push(row.interception);
+          if (isValidNumber(row.rush_touchdown)) t.rush_touchdown.push(row.rush_touchdown);  
+          if (isValidNumber(row.touchdown) && row.special_teams_play !== 1 && row.td_team === row.posteam) t.touchdown.push(row.touchdown);
+        });
+
+        // Convert the collected data into final calculated team statistics
+        const results = Object.values(teams).map(team => {
+          const attempts = sum(team.pass_attempt);
+          const completions = sum(team.complete_pass);
+          const carries = sum(team.rush_attempt);
+          const passingYards = sum(team.passing_yards);
+          const rushingYards = sum(team.yards_gained.filter((val, i) => team.rush_attempt[i] === 1));
+          const sackYards = sum(team.sack_yards);
+          const total_pass_epa = sum(team.pass_epa);
+          const total_rush_epa = sum(team.rush_epa);
+          const total_sack_epa = sum(team.sack_epa)
+          const air_yards = sum(team.air_yards);
+          const sacks = sum(team.sack);
+          const passSuccesses = team.success.filter((v, i) => team.pass_attempt[i] === 1);
+          const rushSuccesses = team.success.filter((v, i) => team.rush_attempt[i] === 1);
+          const successfulSacks = team.success.filter((v,i) => v === 1 && team.pass_attempt[i] == 0 && team.rush_attempt[i] == 0 && team.sack[i] === 1);
+          const explosivePasses = team.yards_gained.filter((val, i) => team.pass_attempt[i] === 1 && val >= 20);
+          const explosiveRushes = team.yards_gained.filter((val, i) => team.rush_attempt[i] === 1 && val >= 10);
+          const totalFirstDowns = sum(team.first_down_rush) + sum(team.first_down_pass) + sum(team.first_down_penalty);
+          
+          return {
+            posteam: team.posteam,
+            team_name: team.team_name || team.posteam,
+            team_logo_wikipedia: team.team_logo_wikipedia,
+            attempts: attempts,
+            completions: completions,
+            completion_pct: attempts > 0 ? (completions / attempts) * 100 : 0,
+            passing_yards: passingYards,
+            pass_touchdowns: sum(team.pass_touchdown),
+            interceptions: sum(team.interception),
+            yards_per_attempt: attempts > 0 ? (passingYards / attempts) : 0,
+            passer_rating: attempts > 0 ? (((Math.max(0, Math.min(2.375, ((completions/attempts) - 0.3) * 5)) + Math.max(0, Math.min(2.375, ((passingYards/attempts) - 3) * 0.25)) + Math.max(0, Math.min(2.375, (sum(team.pass_touchdown)/attempts) * 20)) + Math.max(0, Math.min(2.375, 2.375 - ((sum(team.interception)/attempts) * 25)))) / 6) * 100) : 0,
+            total_pass_epa: total_pass_epa,
+            epa_per_attempt: attempts > 0 ? total_pass_epa / attempts : 0,
+            cpoe: mean(team.cpoe),
+            pass_successes: sum(passSuccesses),
+            pass_success_rate: attempts > 0 ? (sum(passSuccesses) / attempts) * 100 : 0,
+            explosive_passes: explosivePasses.length,
+            explosive_pass_rate: attempts > 0 ? (explosivePasses.length / attempts) * 100 : 0,
+            pass_first_downs: sum(team.first_down_pass),
+            pass_first_down_rate: attempts > 0 ? (sum(team.first_down_pass) / attempts) * 100 : 0,
+            sack: sacks,
+            air_yards_attempt: attempts > 0 ? (air_yards / attempts) : 0,
+            carries: carries,
+            rushing_yards: rushingYards,
+            yards_per_carry: carries > 0 ? rushingYards / carries : 0,
+            rush_touchdowns: sum(team.rush_touchdown),
+            total_rush_epa: total_rush_epa,
+            epa_per_rush: mean(team.rush_epa),
+            rush_successes: sum(rushSuccesses),
+            rush_success_rate: carries > 0 ? (sum(rushSuccesses) / carries) * 100 : 0,
+            explosive_rushes: explosiveRushes.length,
+            explosive_rush_rate: carries > 0 ? (explosiveRushes.length / carries) * 100 : 0,
+            rush_first_downs: sum(team.first_down_rush),
+            rush_first_down_rate: carries > 0 ? (sum(team.first_down_rush) / carries) * 100 : 0,
+            plays: carries + attempts + sacks,
+            total_yards: rushingYards + passingYards + sackYards,
+            yards_per_play: (carries + attempts) > 0 ? (rushingYards + passingYards + sackYards) / (carries + attempts + sacks) : 0,
+            total_touchdowns: sum(team.touchdown),
+            total_epa: total_rush_epa + total_pass_epa + total_sack_epa,
+            epa_per_play: (carries + attempts + sacks) > 0 ? (total_rush_epa + total_pass_epa + total_sack_epa) / (carries + attempts + sacks) : 0,
+            total_successes: sum(rushSuccesses) + sum(passSuccesses) + sum(successfulSacks),
+            success_rate: (carries + attempts + sacks) > 0 ? ((sum(rushSuccesses) + sum(passSuccesses) + sum(successfulSacks)) / (carries + attempts + sacks)) * 100 : 0,
+            explosive_plays: explosiveRushes.length + explosivePasses.length,
+            explosive_play_rate: (carries + attempts + sacks) > 0 ? ((explosiveRushes.length + explosivePasses.length) / (carries + attempts + sacks)) * 100 : 0,
+            total_first_downs: totalFirstDowns, 
+            first_down_rate: (carries + attempts + sacks) > 0 ? (totalFirstDowns / (carries + attempts + sacks)) * 100 : 0,
+            points_for_adjusted: totalPointsScored[team.posteam] || 0
+          };
+        });
+
+        return results;
+    }
+
+
+    /**
+     * Aggregates individual plays into comprehensive defensive team statistics
+     * @param {Array} data - Filtered array of play-by-play data
+     * @returns {Array} Array of defensive team statistics objects with calculated metrics
+     */
+    function aggregateDefenseStats(data) {
+        const teamLookup = {};
+        rawData.forEach(row => {
+          if (row.posteam && row.team_name && !teamLookup[row.posteam]) {
+            teamLookup[row.posteam] = {
+              name: row.team_name,
+              logo: row.team_logo_wikipedia
+            };
+          }
+        });
+
+       
+        const relevantGameIds = new Set(data.map(r => r.game_id));
+        const gameData = rawData.filter(r => relevantGameIds.has(r.game_id));
+
+        const gameScores = {};
+        const gameOpponents = {};
+        gameData.forEach(row => {
+            if (row.game_id && row.posteam && row.defteam) {
+                if (!gameOpponents[row.game_id]) {
+                    gameOpponents[row.game_id] = new Set();
+                }
+                gameOpponents[row.game_id].add(row.posteam);
+                gameOpponents[row.game_id].add(row.defteam);
+            }
+            if (row.game_id && row.scoring_team && isValidNumber(row.total_points)) {
+                if (!gameScores[row.game_id]) {
+                    gameScores[row.game_id] = {};
+                }
+                const currentMax = gameScores[row.game_id][row.scoring_team] || 0;
+                gameScores[row.game_id][row.scoring_team] = Math.max(currentMax, row.total_points);
+            }
+        });
+        
+        const totalPointsAgainst = {};
+        for (const game_id in gameOpponents) {
+            const teamsInGame = Array.from(gameOpponents[game_id]);
+            if (teamsInGame.length === 2) {
+                const [teamA, teamB] = teamsInGame;
+                const scoreA = gameScores[game_id]?.[teamA] || 0;
+                const scoreB = gameScores[game_id]?.[teamB] || 0;
+                if (!totalPointsAgainst[teamA]) totalPointsAgainst[teamA] = 0;
+                if (!totalPointsAgainst[teamB]) totalPointsAgainst[teamB] = 0;
+                totalPointsAgainst[teamA] += scoreB;
+                totalPointsAgainst[teamB] += scoreA;
+            }
+        }
+  
+
+        const teams = {};
+        data.forEach(row => {
+          const key = row.defteam;
+          if (!isValidFilterValue(key)) return;
+
+          if (!teams[key]) {
+            teams[key] = {
+              defteam: key,
+              team_name: teamLookup[key]?.name || key,
+              team_logo_wikipedia: teamLookup[key]?.logo,
+              pass_attempt: [], complete_pass: [], passing_yards: [],
+              pass_touchdown: [], interception: [], epa: [], success: [],
+              cpoe: [], air_yards: [], first_down_pass: [], sack: [],
+              sack_yards: [], two_point_attempt: [], rush_attempt: [],
+              rushing_yards: [], rush_touchdown: [], first_down_rush: [],
+              first_down_penalty: [], 
+              yards_gained: [],
+              touchdown: []
+            };
+          }
+
+          const t = teams[key];
+          if (isValidNumber(row.pass_attempt)) t.pass_attempt.push(row.pass_attempt);
+          if (isValidNumber(row.complete_pass)) t.complete_pass.push(row.complete_pass);
+          if (isValidNumber(row.passing_yards)) t.passing_yards.push(row.passing_yards);
+          if (isValidNumber(row.pass_touchdown)) t.pass_touchdown.push(row.pass_touchdown);
+          if (isValidNumber(row.interception)) t.interception.push(row.interception);
+          if (isValidNumber(row.epa)) t.epa.push(row.epa);
+          if (isValidNumber(row.success)) t.success.push(row.success);
+          if (isValidNumber(row.sack) && row.sack === 1 && isValidNumber(row.yards_gained)) t.sack_yards.push(row.yards_gained);
+          if (isValidNumber(row.cpoe) && row.pass_attempt === 1 && row.sack === 0 && row.two_point_attempt === 0) t.cpoe.push(row.cpoe);
+          if (isValidNumber(row.air_yards) && row.pass_attempt === 1 && row.sack === 0 && row.two_point_attempt === 0) t.air_yards.push(row.air_yards);
+          if (isValidNumber(row.first_down_pass)) t.first_down_pass.push(row.first_down_pass);
+          if (isValidNumber(row.sack)) t.sack.push(row.sack);
+          if (isValidNumber(row.two_point_attempt)) t.two_point_attempt.push(row.two_point_attempt);
+          if (isValidNumber(row.rush_attempt)) t.rush_attempt.push(row.rush_attempt);
+          if (isValidNumber(row.rushing_yards)) t.rushing_yards.push(row.rushing_yards);
+          if (isValidNumber(row.rush_touchdown)) t.rush_touchdown.push(row.rush_touchdown);
+          if (isValidNumber(row.first_down_rush)) t.first_down_rush.push(row.first_down_rush);
+          if (isValidNumber(row.first_down_penalty)) t.first_down_penalty.push(row.first_down_penalty); 
+          if (isValidNumber(row.yards_gained)) t.yards_gained.push(row.yards_gained);
+          if (isValidNumber(row.touchdown) && row.special_teams_play !== 1 && row.td_team === row.posteam) t.touchdown.push(row.touchdown);
+        });
+
+        const results = Object.values(teams).map(team => {
+          const attempts = sum(team.pass_attempt);
+          const completions = sum(team.complete_pass);
+          const passYards = sum(team.passing_yards);
+          const passTDs = sum(team.pass_touchdown);
+          const ints = sum(team.interception);
+          const sacks = sum(team.sack);
+          const sackYardsAllowed = sum(team.sack_yards);
+          const a = Math.min(Math.max((completions/attempts - 0.3) * 5, 0), 2.375);
+          const b = Math.min(Math.max((passYards/attempts - 3) * 0.25, 0), 2.375);
+          const c = Math.min(Math.max((passTDs/attempts) * 20, 0), 2.375);
+          const d = Math.min(Math.max(2.375 - (ints/attempts * 25), 0), 2.375);
+          const passer_rating = attempts > 0 ? ((a + b + c + d) / 6) * 100 : 0;
+          const passEPA = team.epa.filter((val, i) => team.pass_attempt[i] === 1);
+          const total_pass_epa = passEPA.reduce((s, val) => s + val, 0);
+          const epa_per_attempt = attempts > 0 ? total_pass_epa / attempts : 0;
+          const passSuccesses = team.success.filter((val, i) => team.pass_attempt[i] === 1 && val === 1);
+          const pass_success_rate = attempts > 0 ? (passSuccesses.length / attempts) * 100 : 0;
+          const cpoe = team.cpoe.length > 0 ? (team.cpoe.reduce((s, val) => s + val, 0) / team.cpoe.length) : 0;
+          const explosivePasses = team.yards_gained.filter((val, i) => team.pass_attempt[i] === 1 && val >= 20);
+          const explosive_pass_rate = attempts > 0 ? (explosivePasses.length / attempts) * 100 : 0;
+          const passFirstDowns = team.first_down_pass.filter((val, i) => team.pass_attempt[i] === 1 && val === 1);
+          const pass_first_down_rate = attempts > 0 ? (passFirstDowns.length / attempts) * 100 : 0;
+          const air_yards_attempt = team.air_yards.length > 0 ? (team.air_yards.reduce((s, val) => s + val, 0) / team.air_yards.length) : 0;
+          const carries = sum(team.rush_attempt);
+          const rushYards = sum(team.rushing_yards);
+          const rushTDs = sum(team.rush_touchdown);
+          const rushEPA = team.epa.filter((val, i) => team.rush_attempt[i] === 1);
+          const total_rush_epa = rushEPA.reduce((s, val) => s + val, 0);
+          const epa_per_rush = carries > 0 ? total_rush_epa / carries : 0;
+          const rushSuccesses = team.success.filter((val, i) => team.rush_attempt[i] === 1 && val === 1);
+          const rush_success_rate = carries > 0 ? (rushSuccesses.length / carries) * 100 : 0;
+          const successfulSacksAllowed = team.success.filter((val, i) => val === 1 && team.pass_attempt[i] === 0 && team.rush_attempt[i] === 0 && team.sack[i] === 1);
+          const explosiveRushes = team.yards_gained.filter((val, i) => team.rush_attempt[i] === 1 && val >= 10);
+          const explosive_rush_rate = carries > 0 ? (explosiveRushes.length / carries) * 100 : 0;
+          const rushFirstDowns = team.first_down_rush.filter((val, i) => team.rush_attempt[i] === 1 && val === 1);
+          const rush_first_down_rate = carries > 0 ? (rushFirstDowns.length / carries) * 100 : 0;
+          const sackEPA = team.epa.filter((val, i) => team.sack[i] === 1);
+          const total_sack_epa = sackEPA.reduce((s, val) => s + val, 0);
+          const plays_allowed = carries + attempts + sacks;
+          const total_yards_allowed = rushYards + passYards + sackYardsAllowed;
+          const total_touchdowns_allowed = sum(team.touchdown);
+          const total_epa_allowed = total_rush_epa + total_pass_epa + total_sack_epa;
+          const total_successes_allowed = rushSuccesses.length + passSuccesses.length + successfulSacksAllowed.length;
+          const explosive_plays_allowed = explosiveRushes.length + explosivePasses.length;
+          const penaltyFirstDowns = team.first_down_penalty.filter(val => val === 1);
+          const total_first_downs_allowed = rushFirstDowns.length + passFirstDowns.length + penaltyFirstDowns.length; 
+          
+          return {
+            posteam: team.defteam, team_name: team.team_name, team_logo_wikipedia: team.team_logo_wikipedia,
+            attempts: attempts, completions: completions, completion_pct: attempts > 0 ? (completions / attempts) * 100 : 0,
+            passing_yards: passYards, yards_per_attempt: attempts > 0 ? passYards / attempts : 0,
+            pass_touchdowns: passTDs, interceptions: ints, passer_rating: passer_rating,
+            total_pass_epa: total_pass_epa, epa_per_attempt: epa_per_attempt, pass_successes: passSuccesses.length,
+            pass_success_rate: pass_success_rate, cpoe: cpoe, explosive_passes: explosivePasses.length,
+            explosive_pass_rate: explosive_pass_rate, sack: sacks, pass_first_downs: passFirstDowns.length,
+            pass_first_down_rate: pass_first_down_rate, air_yards_attempt: air_yards_attempt,
+            carries: carries, rushing_yards: rushYards, yards_per_carry: carries > 0 ? rushYards / carries : 0,
+            rush_touchdowns: rushTDs, total_rush_epa: total_rush_epa, epa_per_rush: epa_per_rush,
+            rush_successes: rushSuccesses.length, rush_success_rate: rush_success_rate,
+            explosive_rushes: explosiveRushes.length, explosive_rush_rate: explosive_rush_rate,
+            rush_first_downs: rushFirstDowns.length, rush_first_down_rate: rush_first_down_rate,
+            plays_allowed: plays_allowed,
+            total_yards_allowed: total_yards_allowed,
+            yards_per_play_allowed: plays_allowed > 0 ? total_yards_allowed / plays_allowed : 0,
+            total_touchdowns_allowed: total_touchdowns_allowed,
+            total_epa_allowed: total_epa_allowed,
+            epa_per_play_allowed: plays_allowed > 0 ? total_epa_allowed / plays_allowed : 0,
+            total_successes_allowed: total_successes_allowed,
+            success_rate_allowed: plays_allowed > 0 ? total_successes_allowed / plays_allowed * 100 : 0,
+            explosive_plays_allowed: explosive_plays_allowed,
+            explosive_play_rate_allowed: plays_allowed > 0 ? explosive_plays_allowed / plays_allowed * 100 : 0,
+            total_first_downs_allowed: total_first_downs_allowed, 
+            first_down_rate_allowed: plays_allowed > 0 ? total_first_downs_allowed / plays_allowed * 100 : 0,
+            points_against: totalPointsAgainst[team.defteam] || 0
+          };
+        });
+
+        return results;
+    }
+
+   
+
+
+    /**
+     * Attaches click event handlers to table headers for sorting functionality
+     * Each clickable header will sort the table by that column when clicked
+     */
+    function attachSortingHandlers() {
+      const ths = document.querySelectorAll('#statsTable thead th[data-col]');
+      
+      ths.forEach(th => {
+        th.addEventListener('click', () => {
+          const col = th.getAttribute('data-col');
+          if (!col) return;
+
+          if (currentSort.column === col) {
+            currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+          } else {
+            // ==== MODIFIED DEFAULT SORT LOGIC ====
+            currentSort.column = col;
+            
+            const isDefensiveTab = ['TEAM_D', 'PASS_DEF', 'RUSH_DEF'].includes(currentTab);
+            const isExceptionColumn = [
+                'plays_allowed', 'interceptions', 
+                'attempts', 'carries', 'sack'
+            ].includes(col);
+
+            // On defensive tabs, default to ascending (low is good) unless it's an exception column (high is good)
+            if (isDefensiveTab && !isExceptionColumn) {
+                currentSort.direction = 'asc';
+            } else {
+                // On offensive tabs OR for defensive exception columns, default to descending (high is good)
+                currentSort.direction = 'desc';
+            }
+            // ==== END MODIFIED LOGIC ====
+          }
+          
+          const teamStats = (currentTab === 'PASS_DEF' || currentTab === 'RUSH_DEF' || currentTab === 'TEAM_D')
+            ? aggregateDefenseStats(filteredData)
+            : aggregateTeamStats(filteredData);
+          const sorted = sortTeamStats(teamStats, currentSort.column, currentSort.direction);
+          renderTable(sorted);
+          updateHeaderSortIndicators();
+        });
+      });
+    }
+
+    /**
+     * Sorts an array of team statistics by a specified column and direction
+     * @param {Array} stats - Array of team statistics objects
+     * @param {string} column - Column name to sort by (matches object property names)
+     * @param {string} direction - Sort direction: 'asc' for ascending, 'desc' for descending
+     * @returns {Array} New sorted array with rank numbers added to each team
+     */
+    function sortTeamStats(stats, column, direction) {
+      const dir = direction === 'asc' ? 1 : -1; // Convert direction to multiplier
+      
+      // Special case: logo column should actually sort by team name
+      const col = column === 'team_logo_wikipedia' ? 'team_name' : column;
+
+      // Helper function to check if a value is numeric
+      const isNumeric = (val) => typeof val === 'number' && !isNaN(val);
+
+      // Sort the statistics array
+      const sorted = [...stats].sort((a, b) => {
+        const va = a[col]; // Value from first team
+        const vb = b[col]; // Value from second team
+
+        // Handle numeric comparisons (most statistics are numbers)
+        if (isNumeric(va) && isNumeric(vb)) {
+          if (va < vb) return -1 * dir;
+          if (va > vb) return 1 * dir;
+          return 0; // Equal values
+        }
+
+        // Handle string comparisons (team names, etc.)
+        const sa = String(va ?? ''); // Convert to string, handle null/undefined
+        const sb = String(vb ?? '');
+        return sa.localeCompare(sb) * dir; // Use locale-aware string comparison
+      });
+
+      // Add rank numbers based on sort position (1st place, 2nd place, etc.)
+      return sorted.map((row, idx) => ({ rank: idx + 1, ...row }));
+    }
+
+    /**
+     * Updates the visual sort indicators (arrows) in table headers
+     * Shows which column is currently being sorted and in which direction
+     */
+    function updateHeaderSortIndicators() {
+      // Clear all existing indicators first
+      const indicators = document.querySelectorAll('.sort-indicator');
+      indicators.forEach(el => el.textContent = '');
+
+      // Show indicator for the currently active sort column
+      const active = document.getElementById(`sort-${currentSort.column}`);
+      if (active) {
+        // Use up arrow for ascending, down arrow for descending
+        active.textContent = currentSort.direction === 'asc' ? '▲' : '▼';
+      }
+    }
+
+    /**
+     * Renders the team statistics table in the DOM
+     * @param {Array} teamStats - Array of team statistics objects with ranks
+     */
+    function renderTable(teamStats) {
+      const tbody = document.getElementById('statsTableBody');
+      const playType = currentTab;
+    
+
+      // Determine which column groups should be visible based on play type filter
+      const showPass = (playType === 'PASS' || playType === 'PASS_DEF');
+      const showRush = (playType === 'RUSH' || playType === 'RUSH_DEF');
+      const showTeamO = playType === 'TEAM_O';
+      const showTeamD = playType === 'TEAM_D';
+
+      // Hide or show table header columns based on play type selection
+      const headerCells = document.querySelectorAll('#statsTable thead th[data-col]');
+      headerCells.forEach(th => {
+        const key = th.getAttribute('data-col');
+        if (TEAM_O_KEYS.includes(key)) {
+            th.style.display = showTeamO ? '' : 'none';
+        } else if (TEAM_D_KEYS.includes(key)) {
+            th.style.display = showTeamD ? '' : 'none';
+        } else if (PASS_KEYS.includes(key)) {
+            th.style.display = showPass ? '' : 'none';
+        } else if (RUSH_KEYS.includes(key)) {
+            th.style.display = showRush ? '' : 'none';
+        } else { // For rank and team_name, always show
+            th.style.display = '';
+        }
+      });
+
+      tbody.innerHTML = ''; // Clear any existing table rows
+
+      // Handle the case where no data matches the current filters
+      if (teamStats.length === 0) {
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.colSpan = 22; // Span across all columns
+        td.className = 'no-data';
+        td.textContent = 'No data available for selected filters';
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+        return;
+      }
+
+      // Render each team's statistics as a table row
+      teamStats.forEach(team => {
+        const tr = document.createElement('tr');
+
+        // ==== MODIFIED RANKING LOGIC ====
+        const isDefensiveTab = ['TEAM_D', 'PASS_DEF', 'RUSH_DEF'].includes(playType);
+        
+        // For defensive stats, some columns are better when higher (e.g., turnovers, sacks).
+        // These should behave like offensive stats where descending sort = high rank.
+        const defensiveExceptionColumns = [
+          'plays_allowed', 'interceptions',
+          'attempts', 'carries', 'sack'
+        ];
+        const isExceptionColumn = defensiveExceptionColumns.includes(currentSort.column);
+
+        let displayRank = team.rank ?? '-';
+        
+        // The rank is calculated from a raw sort (1 to N). We need to decide whether to display it as is,
+        // or invert it (N to 1). This depends on the tab and the column.
+        // Inversion is needed when an ascending sort (lowest value = rank 1) should be displayed as the worst rank.
+        let invertRankOnAscendingSort = false;
+        
+        if (!isDefensiveTab) {
+          // For OFFENSIVE tabs, ascending sort is always for the worst performers, so we invert the rank.
+          invertRankOnAscendingSort = true;
+        } else {
+          // For DEFENSIVE tabs...
+          if (isExceptionColumn) {
+            // ...for exception columns (where higher is better), ascending sort is for the worst performers, so invert.
+            invertRankOnAscendingSort = true;
+          } else {
+            // ...for regular columns (where lower is better), ascending sort is for the BEST performers, so DO NOT invert.
+            invertRankOnAscendingSort = false;
+          }
+        }
+        
+        if (currentSort.column !== 'team_name' && currentSort.direction === 'asc' && team.rank && invertRankOnAscendingSort) {
+          displayRank = teamStats.length + 1 - team.rank;
+        }
+        
+
+        // Define cell contents in the exact order they appear in the table header
+        const cells = [
+          displayRank,
+          `<img src="${team.team_logo_wikipedia || ''}" alt="${escapeHtml(team.team_name || '')}" class="team-logo" onerror="this.style.display='none'">${escapeHtml(team.team_name || '')}`,
+          formatNumber(team.attempts),                               // Pass attempts
+          formatNumber(team.completions),                            // Pass completions
+          formatPercentage(team.completion_pct),                     // Completion percentage
+          formatNumber(team.passing_yards),                          // Passing yards
+          formatNumber(team.pass_touchdowns),                        // Passing touchdowns
+          formatNumber(team.interceptions),                          // Interceptions thrown
+          formatNumber(team.pass_first_downs),                      // Passing first downs converted
+          formatPercentage(team.pass_first_down_rate),              // Passing first down rate
+          formatDecimal(team.yards_per_attempt),                     // Yards per pass attempt
+          formatDecimal(team.air_yards_attempt),                      // Air yards per pass attempt
+          formatDecimal(team.passer_rating),                         // Passer rating
+          formatDecimal(team.total_pass_epa, 2),                       // Total passing EPA
+          formatDecimal(team.epa_per_attempt, 2),                      // EPA per attempt
+          formatDecimal(team.cpoe),                                 // Completion % over expected
+          formatNumber(team.pass_successes),                        // Total successful pass plays
+          formatPercentage(team.pass_success_rate),                 // Successful pass %
+          formatNumber(team.explosive_passes),                      // Explosive pass plays
+          formatPercentage(team.explosive_pass_rate),               // Explosive pass %
+          formatNumber(team.sack),                                // Times sack
+          formatNumber(team.carries),                                // Rush attempts
+          formatNumber(team.rushing_yards),                          // Rushing yards
+          formatDecimal(team.yards_per_carry),                      // Yards per carry
+          formatNumber(team.rush_touchdowns),                        // Rushing touchdowns
+          formatNumber(team.rush_first_downs),                      // Rushing first downs converted
+          formatPercentage(team.rush_first_down_rate),              // Rushing first down rate
+          formatDecimal(team.total_rush_epa, 2),                       // Total rushing EPA
+          formatDecimal(team.epa_per_rush, 2),                         // EPA per rush
+          formatNumber(team.rush_successes),                        // Total successful run plays
+          formatPercentage(team.rush_success_rate),                 // Successful run %
+          formatNumber(team.explosive_rushes),                      // Explosive run plays
+          formatPercentage(team.explosive_rush_rate),               // Explosive run %
+
+          // Team Offense Stats
+          formatNumber(team.plays),
+          formatNumber(team.points_for_adjusted),
+          formatNumber(team.total_yards),
+          formatDecimal(team.yards_per_play),
+          formatNumber(team.total_touchdowns),
+          formatNumber(team.total_first_downs),
+          formatPercentage(team.first_down_rate),
+          formatDecimal(team.total_epa, 2),
+          formatDecimal(team.epa_per_play, 2),
+          formatNumber(team.total_successes),
+          formatPercentage(team.success_rate),
+          formatNumber(team.explosive_plays),
+          formatPercentage(team.explosive_play_rate),
+          
+    
+          // Team Defense Stats
+          formatNumber(team.plays_allowed),
+          formatNumber(team.points_against),
+          formatNumber(team.total_yards_allowed),
+          formatDecimal(team.yards_per_play_allowed),
+          formatNumber(team.total_touchdowns_allowed),
+          formatNumber(team.total_first_downs_allowed),
+          formatPercentage(team.first_down_rate_allowed),
+          formatDecimal(team.total_epa_allowed, 2),
+          formatDecimal(team.epa_per_play_allowed, 2),
+          formatNumber(team.total_successes_allowed),
+          formatPercentage(team.success_rate_allowed),
+          formatNumber(team.explosive_plays_allowed),
+          formatPercentage(team.explosive_play_rate_allowed),
+        
+          
+        ];
+
+        // Column identifiers matching the cell order (used for conditional display)
+        const keys = [
+          'rank', 'team_name',
+          ...PASS_KEYS,
+          ...RUSH_KEYS,
+          ...TEAM_O_KEYS,
+          ...TEAM_D_KEYS
+        ];
+
+        // Create table cells for this team's row
+        cells.forEach((cell, idx) => {
+          const key = keys[idx];
+          const td = document.createElement('td');
+
+          // Handle logo cell specially (contains HTML img tag)
+          if (key === 'team_name') {
+            td.innerHTML = cell; // Contains logo + team name HTML
+          } else {
+            td.textContent = typeof cell === 'string' ? cell : String(cell);
+          }
+
+          // Hide cells based on play type filter (same logic as headers)
+          if (TEAM_O_KEYS.includes(key)) {
+              td.style.display = showTeamO ? '' : 'none';
+          } else if (TEAM_D_KEYS.includes(key)) {
+              td.style.display = showTeamD ? '' : 'none';
+          } else if (PASS_KEYS.includes(key)) {
+              td.style.display = showPass ? '' : 'none';
+          } else if (RUSH_KEYS.includes(key)) {
+              td.style.display = showRush ? '' : 'none';
+          }
+
+          tr.appendChild(td);
+        });
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    /**
+     * Displays an error message to the user and hides loading indicator
+     * @param {string} message - Error message to display
+     */
+    function showError(message) {
+      document.getElementById('error').textContent = message;
+      document.getElementById('error').style.display = 'block';
+      document.getElementById('loading').style.display = 'none';
+    }
+
+    // ===== UTILITY FUNCTIONS =====
+
+    /**
+     * Checks if a value is a valid number for statistical calculations
+     * @param {*} value - Value to check
+     * @returns {boolean} True if value is a valid, finite number
+     */
+    function isValidNumber(value) {
+      return value !== null && value !== undefined && value !== '' && !isNaN(value) && isFinite(value);
+    }
+
+    /**
+     * Calculates the sum of an array of numbers
+     * @param {Array} arr - Array of numbers to sum
+     * @returns {number} Sum of all numbers in the array
+     */
+    function sum(arr) {
+      return arr.reduce((total, current) => total + current, 0);
+    }
+
+    /**
+     * Calculates the arithmetic mean (average) of an array of numbers
+     * @param {Array} arr - Array of numbers
+     * @returns {number} Mean value, or 0 if array is empty
+     */
+    function mean(arr) {
+      return arr.length > 0 ? sum(arr) / arr.length : 0;
+    }
+
+    /**
+     * Formats a number as an integer string, or returns '-' for invalid values
+     * @param {*} value - Value to format
+     * @returns {string} Formatted integer or dash for missing/invalid data
+     */
+    function formatNumber(value) {
+      return isValidNumber(value) ? Math.round(Number(value)).toString() : '-';
+    }
+
+    /**
+     * Formats a number to 1 decimal place, or returns '-' for invalid values
+     * @param {*} value - Value to format
+     * @returns {string} Formatted decimal number or dash for missing/invalid data
+     */
+    function formatDecimal(value, decimals = 1) {
+      return isValidNumber(value) ? Number(value).toFixed(decimals) : '-';
+    }
+
+    /**
+     * Formats a number as a percentage with 1 decimal place, or returns '-' for invalid values
+     * @param {*} value - Value to format (expected to be 0-100 range)
+     * @returns {string} Formatted percentage with % symbol or dash for missing/invalid data
+     */
+    function formatPercentage(value) {
+      return isValidNumber(value) ? Number(value).toFixed(1) + '%' : '-';
+    }
+
+    /**
+     * Escapes HTML special characters to prevent XSS (Cross-Site Scripting) attacks
+     * This is crucial when displaying user-provided or external data in HTML
+     * @param {string} str - String that may contain HTML special characters
+     * @returns {string} HTML-safe string with special characters escaped
+     */
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')     // Ampersand must be escaped first
+        .replace(/</g, '&lt;')      // Less than
+        .replace(/>/g, '&gt;')      // Greater than
+        .replace(/"/g, '&quot;')    // Double quote
+        .replace(/'/g, '&#039;');   // Single quote
+    }
+  </script>
+</body>
+</html>
